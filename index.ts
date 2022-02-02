@@ -296,8 +296,10 @@ const colorsTextArea = getById("colors", HTMLTextAreaElement);
 const columnsTextArea = getById("columns", HTMLTextAreaElement);
 const rowsTextArea = getById("rows", HTMLTextAreaElement);
 const load3PartsButton = getById("load3Parts", HTMLButtonElement);
+const colorSamplesDiv = getById("colorSamples", HTMLDivElement);
 
 load3PartsButton.addEventListener("click", () => {
+  colorSamplesDiv.innerText = "";
   const endOfLine = /\r?\n/g;
   const colors : string[] = [];
   colorsTextArea.value.split(endOfLine).forEach(line => {
@@ -305,6 +307,12 @@ load3PartsButton.addEventListener("click", () => {
     if (line != "") {
       colors.push(line);
     }
+  });
+  colors.forEach(color => {
+    const span = document.createElement("span");
+    span.innerText = "★★★";
+    span.style.color = color;
+    colorSamplesDiv.appendChild(span);
   });
   function getRequirements(from : HTMLTextAreaElement) {
     const result : ColorRequirements[][] = [];

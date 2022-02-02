@@ -12,23 +12,44 @@
     <button id="load">Load</button>
     <hr>
     <div>Colors (one per line):</div>
-    <div><textarea id="colors">
-red
-green
-    </textarea></div>
+    <div style="display: flex">
+      <div><textarea id="colors">
+#fff44f
+#5C4033
+#B87333
+white
+      </textarea></div>
+      <div id="colorSamples"><span>★★★</span></div> 
+    </div>
     <br>
     <div>Columns</div>
     <div>One line per column.  One number per color, spaces between the numbers.  An * after the number to say all in a row.</div>
     <div><textarea id="columns">
-0 2*
-2* 0
+10* 0 0 0
+4 0 2* 4*
+1 3* 3 3
+1 1 3 5
+1 1 4 4
+1 1 3 5
+1 2 4 3
+4 0 1 5*
+7 0 1 2
+7 0 0 3*
     </textarea></div>
     <br>
     <div>Rows</div>
     <div>One line per row.  One number per color, spaces between the numbers.  An * after the number to say all in a row.</div>
     <div><textarea id="rows">
-1 1
-1 1
+10* 0 0 0
+5 0 0 5*
+3 5* 0 2
+1 1 4* 4
+2 1 4* 3
+2 0 0 8
+3 1 1 5
+5 0 1 4
+2 0 5 3*
+4 0 6* 0
     </textarea></div>
     <br>
     <div><button id="load3Parts">Load</button></div>
