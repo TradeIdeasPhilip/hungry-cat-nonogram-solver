@@ -1,7 +1,7 @@
 #output TD {
   width: 1em;
   height: 1em;
-  background: conic-gradient(#FCC, #FFC, #CFC, #Cff, #CCf, #fCf);
+  background: conic-gradient(#fcc, #ffc, #cfc, #cff, #ccf, #fcf);
 }
 #colorSamples span {
   background: linear-gradient(to left, black, white);

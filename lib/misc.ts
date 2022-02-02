@@ -76,14 +76,14 @@ export function pickAny<T>(set: ReadonlySet<T>): T | undefined {
 }
 
 /**
- * 
- * @param a 
- * @param b 
+ *
+ * @param a
+ * @param b
  * @returns A new set containing every element that was in `a` and in `b`.
  */
-export function intersection<T>(a : ReadonlySet<T>, b : ReadonlySet<T>) {
+export function intersection<T>(a: ReadonlySet<T>, b: ReadonlySet<T>) {
   // Adapted from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set
-  return new Set([...a].filter(x => b.has(x)));
+  return new Set([...a].filter((x) => b.has(x)));
 }
 
 /**

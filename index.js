@@ -24,7 +24,7 @@ class CellColor {
         }
     }
     limitTo(allowed) {
-        [...this.possible].forEach(toCheck => {
+        [...this.possible].forEach((toCheck) => {
             if (!allowed.has(toCheck)) {
                 this.eliminate(toCheck);
             }
@@ -36,7 +36,7 @@ class CellColor {
 }
 function decodePuzzleDescription(possible) {
     const result = JSON.parse(possible);
-    result.colors.forEach(color => {
+    result.colors.forEach((color) => {
         if (typeof color !== "string") {
             throw new Error("colors should be a list of strings.");
         }
@@ -64,7 +64,7 @@ function decodePuzzleDescription(possible) {
         if (header.length != colorCount) {
             throw new Error(`Expecting ${colorCount} color requirements, found ${header.length}, in row #${index}`);
         }
-        header.forEach(requirements => {
+        header.forEach((requirements) => {
             testColorRequirements(requirements);
         });
     });
@@ -72,7 +72,7 @@ function decodePuzzleDescription(possible) {
         if (header.length != colorCount) {
             throw new Error(`Expecting ${colorCount} color requirements, found ${header.length}, in column #${index}`);
         }
-        header.forEach(requirements => {
+        header.forEach((requirements) => {
             testColorRequirements(requirements);
         });
     });
@@ -86,10 +86,10 @@ class Puzzle {
         this.description = description;
         const colorCount = description.colors.length;
         const cellsRowColumn = [];
-        description.rows.forEach(rowRequirements => {
+        description.rows.forEach((rowRequirements) => {
             const cellsThisRow = [];
             cellsRowColumn.push(cellsThisRow);
-            description.columns.forEach(columnRequirements => {
+            description.columns.forEach((columnRequirements) => {
                 cellsThisRow.push(new CellColor(colorCount));
             });
         });
@@ -107,14 +107,24 @@ class Puzzle {
         this.rows = rows;
         this.columns = columns;
         description.rows.forEach((requirements, index) => {
-            rows.push({ cells: cellsRowColumn[index], cross: columns, index, requirements });
+            rows.push({
+                cells: cellsRowColumn[index],
+                cross: columns,
+                index,
+                requirements,
+            });
         });
         description.columns.forEach((requirements, index) => {
-            columns.push({ cells: cellsColumnRow[index], cross: columns, index, requirements });
+            columns.push({
+                cells: cellsColumnRow[index],
+                cross: columns,
+                index,
+                requirements,
+            });
         });
     }
     forDisplay() {
-        return this.rows.map(row => row.cells.map(cellColor => {
+        return this.rows.map((row) => row.cells.map((cellColor) => {
             const color = cellColor.color;
             if (color === undefined) {
                 return undefined;
@@ -134,8 +144,8 @@ class Puzzle {
             });
             return result;
         }
-        const allowedInColumn = this.columns.map(column => allowed(column.requirements));
-        this.rows.forEach(row => {
+        const allowedInColumn = this.columns.map((column) => allowed(column.requirements));
+        this.rows.forEach((row) => {
             const allowedInRow = allowed(row.requirements);
             row.cells.forEach((cellColor, columnIndex) => {
                 cellColor.limitTo(allowedInRow);
@@ -147,9 +157,9 @@ class Puzzle {
 function showPuzzle(destination, source) {
     destination.innerText = "";
     const forDisplay = source.forDisplay();
-    forDisplay.forEach(rowSource => {
+    forDisplay.forEach((rowSource) => {
         const row = destination.insertRow();
-        rowSource.forEach(cellStyle => {
+        rowSource.forEach((cellStyle) => {
             const cell = row.insertCell();
             cell.style.width = "1em";
             if (cellStyle !== undefined) {
@@ -176,13 +186,13 @@ load3PartsButton.addEventListener("click", () => {
     colorSamplesDiv.innerText = "";
     const endOfLine = /\r?\n/g;
     const colors = [];
-    colorsTextArea.value.split(endOfLine).forEach(line => {
+    colorsTextArea.value.split(endOfLine).forEach((line) => {
         line = line.trim();
         if (line != "") {
             colors.push(line);
         }
     });
-    colors.forEach(color => {
+    colors.forEach((color) => {
         const span = document.createElement("span");
         span.innerText = "★★★";
         span.style.color = color;
@@ -190,14 +200,14 @@ load3PartsButton.addEventListener("click", () => {
     });
     function getRequirements(from) {
         const result = [];
-        from.value.split(endOfLine).forEach(line => {
-            const items = line.split(" ").filter(item => item != "");
+        from.value.split(endOfLine).forEach((line) => {
+            const items = line.split(" ").filter((item) => item != "");
             if (items.length > 0) {
                 if (items.length != colors.length) {
                     throw new Error(`Expecting ${colors.length} requirements, found ${items.length}, "${line}"`);
                 }
                 const thisRowRowColumn = [];
-                items.forEach(item => {
+                items.forEach((item) => {
                     const allInARow = item[item.length - 1] == "*";
                     if (allInARow) {
                         item = item.substring(0, item.length - 1);
@@ -221,7 +231,11 @@ load3PartsButton.addEventListener("click", () => {
         });
         return result;
     }
-    const puzzleDescription = { colors, columns: getRequirements(columnsTextArea), rows: getRequirements(rowsTextArea) };
+    const puzzleDescription = {
+        colors,
+        columns: getRequirements(columnsTextArea),
+        rows: getRequirements(rowsTextArea),
+    };
     requirementsTextArea.value = JSON.stringify(puzzleDescription);
     const puzzle = new Puzzle(puzzleDescription);
     puzzle.checkIntersections();
