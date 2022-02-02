@@ -288,5 +288,59 @@ const outputTable = getById("output", HTMLTableElement);
 loadButton.addEventListener("click", () => {
   const description = decodePuzzleDescription(requirementsTextArea.value);
   const puzzle = new Puzzle(description);
+  puzzle.checkIntersections();
+  showPuzzle(outputTable, puzzle);
+});
+
+const colorsTextArea = getById("colors", HTMLTextAreaElement);
+const columnsTextArea = getById("columns", HTMLTextAreaElement);
+const rowsTextArea = getById("rows", HTMLTextAreaElement);
+const load3PartsButton = getById("load3Parts", HTMLButtonElement);
+
+load3PartsButton.addEventListener("click", () => {
+  const endOfLine = /\r?\n/g;
+  const colors : string[] = [];
+  colorsTextArea.value.split(endOfLine).forEach(line => {
+    line = line.trim();
+    if (line != "") {
+      colors.push(line);
+    }
+  });
+  function getRequirements(from : HTMLTextAreaElement) {
+    const result : ColorRequirements[][] = [];
+    from.value.split(endOfLine).forEach(line => {
+      const items = line.split(" ").filter(item => item != "");
+      if (items.length > 0) {
+        if (items.length != colors.length) {
+          throw new Error(`Expecting ${colors.length} requirements, found ${items.length}, "${line}"`);
+        }
+        const thisRowRowColumn : ColorRequirements[] = [];
+        items.forEach(item => {
+          const allInARow = item[item.length - 1] == "*";
+          if (allInARow) {
+            item = item.substring(0, item.length - 1);
+          }
+          const count = Number.parseInt(item);
+          if (count < 0)  {
+            throw new Error(`invalid count: ${count} in "${line}"`);
+          }
+          if (count < 2) {
+            if (allInARow) {
+              throw new Error(`all in a row is invalid here: count=${count} in "${line}"`);
+            }
+            thisRowRowColumn.push({count});
+          } else {
+            thisRowRowColumn.push({count, allInARow});
+          }
+        });
+        result.push(thisRowRowColumn);
+      }
+    });
+    return result;
+  }
+  const puzzleDescription : PuzzleDescription = { colors, columns: getRequirements(columnsTextArea), rows: getRequirements(rowsTextArea) }; 
+  requirementsTextArea.value = JSON.stringify(puzzleDescription);
+  const puzzle = new Puzzle(puzzleDescription);
+  puzzle.checkIntersections();
   showPuzzle(outputTable, puzzle);
 });
