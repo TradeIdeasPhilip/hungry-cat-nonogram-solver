@@ -54,6 +54,9 @@ class CellColor {
       return colorIndex;
     }
   }
+  get colors(): number[] {
+    return [...this.possible];
+  }
   /**
    * Mark the color as impossible.
    * If the color was already eliminated, do nothing.
@@ -257,17 +260,9 @@ class Puzzle {
    *
    * The color comes from PuzzleDescription.colors.
    */
-  forDisplay(): (string | undefined)[][] {
+  forDisplay(): string[][][] {
     return this.rows.map((row) =>
-      row.cells.map((cellColor) => {
-        const color = cellColor.color;
-        if (color === undefined) {
-          return undefined;
-        } else {
-          return this.description.colors[color];
-        }
-      })
-    );
+      row.cells.map((cellColor) => cellColor.colors.map(color => this.description.colors[color])));
   }
   /**
    * A very simple start.  This just looks at the original requirements for each row and column.
@@ -345,11 +340,13 @@ function showPuzzle(destination: HTMLTableElement, source: Puzzle) {
     rowSource.forEach((cellStyle) => {
       const cell = row.insertCell();
       cell.style.width = "1em";
-      if (cellStyle !== undefined) {
-        cell.style.background = cellStyle;
-      } else {
-        cell.classList.add("anyColor");
-      }
+      cell.classList.add("findMe");
+      const background1 = "conic-gradient(from " + Math.random() + "turn, " + [...cellStyle, ...cellStyle].join(", ") + ")";
+      const background2 = "linear-gradient(90deg, " + [...cellStyle, ...cellStyle].join(", ") + ")";
+      const rotate = Math.random() * 100;
+      const background = "conic-gradient(" + cellStyle.map((color, index) => 
+        `${color} ${index / cellStyle.length * 100}% ${(index+1) / cellStyle.length * 100}%`).join(", ") + ")";
+      cell.style.background = background;
     });
   }
   hcn.lastShown = source;
