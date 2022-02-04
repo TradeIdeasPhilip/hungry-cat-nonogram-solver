@@ -82,6 +82,20 @@ class Puzzle {
     description;
     rows;
     columns;
+    getRow(index) {
+        const result = this.rows[0];
+        if (!result) {
+            throw new Error(`Unknown row number: ${index}`);
+        }
+        return new ProposedRowOrColumn(result);
+    }
+    getColumn(index) {
+        const result = this.columns[0];
+        if (!result) {
+            throw new Error(`Unknown column number: ${index}`);
+        }
+        return new ProposedRowOrColumn(result);
+    }
     constructor(description) {
         this.description = description;
         const colorCount = description.colors.length;
@@ -167,6 +181,7 @@ function showPuzzle(destination, source) {
             }
         });
     });
+    hcn.lastShown = source;
 }
 const requirementsTextArea = getById("requirements", HTMLTextAreaElement);
 const loadButton = getById("load", HTMLButtonElement);
@@ -241,4 +256,110 @@ load3PartsButton.addEventListener("click", () => {
     puzzle.checkIntersections();
     showPuzzle(outputTable, puzzle);
 });
+class KnownColorList {
+    upstream;
+    newColors;
+    constructor(newColors, upstream = undefined) {
+        this.upstream = upstream;
+        this.newColors = new Map(newColors);
+        if (upstream) {
+            newColors.forEach((kvp) => {
+                const index = kvp[0];
+                const newColor = kvp[1];
+                const previousColor = upstream.get(index);
+                if (previousColor !== newColor && previousColor !== undefined) {
+                    throw new Error(`Attempt to overwrite an existing color.  index=${index}, newColor=${newColor}, previousColor=${previousColor}`);
+                }
+            });
+        }
+    }
+    get(index) {
+        return this.newColors.get(index) ?? this.upstream?.get(index);
+    }
+    has(index) {
+        return this.get(index) !== undefined;
+    }
+}
+class ProposedRowOrColumn {
+    valid;
+    known;
+    base;
+    constructor(base, add = undefined) {
+        let known;
+        if (base instanceof ProposedRowOrColumn) {
+            if (!base.valid) {
+                throw new Error("Cannot build on top of an invalid row or column.");
+            }
+            this.base = base.base;
+            known = new Map(base.known);
+        }
+        else {
+            this.base = base;
+            known = new Map();
+            base.cells.forEach((cell, index) => {
+                const color = cell.color;
+                if (color !== undefined) {
+                    known.set(index, color);
+                }
+            });
+        }
+        this.known = known;
+        let valid = true;
+        if (add !== undefined) {
+            for (const kvp of add) {
+                const [index, color] = kvp;
+                const previousColor = known.get(index);
+                if (previousColor === undefined) {
+                    known.set(index, color);
+                }
+                else if (previousColor != color) {
+                    valid = false;
+                    break;
+                }
+            }
+            const allRequirements = this.base.requirements;
+            for (let colorToCheck = 0; valid && (colorToCheck < allRequirements.length); colorToCheck++) {
+                const requirements = allRequirements[colorToCheck];
+                if (requirements.allInARow) {
+                    let mustEndBefore = -1;
+                    for (const kvp of known) {
+                        const [index, colorOfCell] = kvp;
+                        if (colorOfCell === colorToCheck) {
+                            if (mustEndBefore == -1) {
+                                mustEndBefore = index + requirements.count;
+                            }
+                            if (index >= mustEndBefore) {
+                                valid = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else {
+                    let stillAllowed = requirements.count;
+                    for (const kvp of known) {
+                        const [index, colorOfCell] = kvp;
+                        if (colorOfCell === colorToCheck) {
+                            stillAllowed--;
+                            if (stillAllowed < 0) {
+                                valid = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        this.valid = valid;
+    }
+    tryCross(index, color) {
+        color ??= this.known.get(index);
+        if (color === undefined) {
+            throw new Error(`Missing color for index ${index}`);
+        }
+        const cross = new ProposedRowOrColumn(this.base.cross[this.base.index], [[index, color]]);
+        return cross.valid;
+    }
+}
+window.hcn = { CellColor, decodePuzzleDescription, Puzzle, showPuzzle, ProposedRowOrColumn };
 //# sourceMappingURL=index.js.map

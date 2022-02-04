@@ -1,5 +1,4 @@
 import { getById } from "./lib/client-misc.js";
-import { pickAny } from "./lib/misc.js";
 
 /**
  * This is what you might see at the top of a column or on the left of a row.
@@ -70,7 +69,7 @@ class CellColor {
    * Eliminate all colors except those found in `allowed`.
    * @param allowed Do *not* eliminate these.
    */
-  limitTo(allowed: ReadonlySet<number>) {
+  limitTo(allowed: { has(index: number): boolean }) {
     [...this.possible].forEach((toCheck) => {
       if (!allowed.has(toCheck)) {
         this.eliminate(toCheck);
@@ -195,6 +194,20 @@ type RowOrColumn = {
 class Puzzle {
   private readonly rows: ReadonlyArray<RowOrColumn>;
   private readonly columns: ReadonlyArray<RowOrColumn>;
+  getRow(index : number) : ProposedRowOrColumn {
+    const result = this.rows[0];
+    if (!result) {
+      throw new Error(`Unknown row number: ${index}`);
+    }
+    return new ProposedRowOrColumn(result);
+  }
+  getColumn(index : number) : ProposedRowOrColumn {
+    const result = this.columns[0];
+    if (!result) {
+      throw new Error(`Unknown column number: ${index}`);
+    }
+    return new ProposedRowOrColumn(result);
+  }
   constructor(public readonly description: PuzzleDescription) {
     const colorCount = description.colors.length;
     const cellsRowColumn: CellColor[][] = [];
@@ -297,6 +310,7 @@ function showPuzzle(destination: HTMLTableElement, source: Puzzle) {
       }
     });
   });
+  hcn.lastShown = source;
 }
 
 const requirementsTextArea = getById("requirements", HTMLTextAreaElement);
@@ -378,3 +392,192 @@ load3PartsButton.addEventListener("click", () => {
   puzzle.checkIntersections();
   showPuzzle(outputTable, puzzle);
 });
+
+/**
+ * This was my first attempt at what became `ProposedRowOrColumn`.
+ * 
+ * ~~This is a map from an index (i.e. 0 for the first item in the row) to a color (i.e. 1 for the second color in our universe of colors).~~
+ *
+ * ~~This is a readonly data structure.
+ * The idea is that we might build up several color lists at once, to see which ones make might work.
+ * You can add new colors by referencing an existing color list.~~
+ */
+class KnownColorList {
+  private readonly newColors: ReadonlyMap<number, number>;
+  constructor(
+    newColors: [index: number, color: number][],
+    private readonly upstream: KnownColorList | undefined = undefined
+  ) {
+    this.newColors = new Map(newColors);
+    if (upstream) {
+      newColors.forEach((kvp) => {
+        const index = kvp[0];
+        const newColor = kvp[1];
+        const previousColor = upstream.get(index);
+        if (previousColor !== newColor && previousColor !== undefined) {
+          throw new Error(
+            `Attempt to overwrite an existing color.  index=${index}, newColor=${newColor}, previousColor=${previousColor}`
+          );
+        }
+      });
+    }
+  }
+  get(index: number): number | unknown {
+    return this.newColors.get(index) ?? this.upstream?.get(index);
+  }
+  has(index: number): boolean {
+    return this.get(index) !== undefined;
+  }
+}
+
+/**
+ * This is the playground where I try to pick colors just to see what will happen.
+ * 
+ * This is readonly.
+ * The idea is that I will have a lot of these at once as I explore different possibilities.
+ */
+class ProposedRowOrColumn {
+  /**
+   * False if this configuration broke a rule.
+   * True if no obvious rule was broken.
+   * This only looks at the colors selected in this row or column and the requirements for this same row or column.
+   */
+  public readonly valid : boolean;
+  /**
+   * This maps from an index (0 for the first row or column, 1 for the second, etc.) to a color.
+   * If the color for this index is unknown, there is no entry in the table.
+   */
+  private readonly known : ReadonlyMap<number, number>;
+  /**
+   * This is the row or column I started with.
+   * I keep this mostly for the requirements.
+   */
+  private readonly base: RowOrColumn;
+  /**
+   * 
+   * @param base I am creating these in small steps.
+   * I will start from an actual RowOrColumn.
+   * Then I'll add a small number of colors at a time.
+   * Because this object is read only, adding colors means creating a new object.
+   * Precondition:  Do not start with a ProposedRowOrColumn that is !valid.
+   * @param add The items to add.
+   * These are organized just like the input to a map constructor.
+   * If you name an index-color pair that already exists, it is silently ignored.
+   * If you name an index-color pair that conflicts with an existing pair, that's an error.
+   * 
+   * The default is to add nothing.
+   * That is useful when converting a RowOrColumn to a ProposedRowOrColumn.
+   * Remember that RowOrColumn is **not** read only, so it can be safer to export a ProposedRowOrColumn.
+   * @throws Trying to change an existing color will cause this to throw an exception.
+   * Other illegal stuff, like trying to add too many or a single color, will just set the valid flag to false.
+   */
+  constructor(
+    base : ProposedRowOrColumn | RowOrColumn,
+    add: [index: number, color: number][] | undefined = undefined
+  ) {
+    let known : Map<number, number>;
+    if (base instanceof ProposedRowOrColumn) {
+      if (!base.valid) {
+        throw new Error("Cannot build on top of an invalid row or column.")
+      }
+      this.base = base.base;
+      known = new Map(base.known);
+    } else {
+      this.base = base;
+      known = new Map();
+      base.cells.forEach((cell,index) => {
+        const color = cell.color;
+        if (color !== undefined) {
+          known.set(index, color);
+        }
+      });
+    }
+    this.known = known;
+    // It annoys me that this valid check is so slow.
+    // For simplicity this always checks everything.
+    // It seems like I should be able to do better because I know what's changing!
+    // Worst case, I try some tricks when I can, and I always fall back on this if my tricks are inconclusive.
+    let valid = true;
+    if (add !== undefined) {
+      for (const kvp of add) {
+        const [index, color] = kvp;
+        const previousColor = known.get(index);
+        if (previousColor === undefined) {
+          known.set(index, color);
+        } else if (previousColor != color) {
+          valid = false;
+          break;
+        }
+      }
+      const allRequirements = this.base.requirements;
+      for (let colorToCheck = 0; valid && (colorToCheck < allRequirements.length); colorToCheck++) {
+        const requirements = allRequirements[colorToCheck];
+        if (requirements.allInARow) {
+          let mustEndBefore = -1;
+          for (const kvp of known) {
+            const [index, colorOfCell] = kvp;
+            if (colorOfCell === colorToCheck) {
+              if (mustEndBefore == -1) {
+                // Found the first of this color.
+                mustEndBefore = index + requirements.count;
+              }
+              if (index >= mustEndBefore) {
+                valid = false;
+                break;
+              }
+            }
+          }
+        } else {
+          let stillAllowed = requirements.count;
+          for (const kvp of known) {
+            const [index, colorOfCell] = kvp;
+            if (colorOfCell === colorToCheck) {
+              stillAllowed--;
+              if (stillAllowed < 0) {
+                valid = false;
+                break;
+              }
+            }
+          }
+        }
+        
+      }
+    }
+    this.valid = valid;
+  }
+  /**
+   * Check a color against the other row or column, the one that crosses this one at the
+   * specified index.
+   * 
+   * Note that there are three different places where we store rules.  The row or column
+   * we are looking at has its requirements, the cross row or column has similar requirements,
+   * and the cell itself can remember that certain colors have been marked as impossible.
+   * This function is only checking the cross row or column.
+   * @param index The index of the cell in the current row or column.
+   * @param color The color to test.  
+   * By default this will read the current color out of the given index in this row or column.
+   * 
+   * Use the default if you've already set this color.
+   * Specify a color if you want to check before setting this color.
+   * @returns True if the cross row or column allows this color to be placed at this location.
+   * False if the given color would break the cross row or column's requirements.
+   * @throws If you specify an index that is out of bounds, or if the color is completely unknown,
+   * or if the specified color conflicts with an existing color, this will throw an `Error`.
+   */
+  tryCross(index : number, color? : number) : boolean {
+    color ??= this.known.get(index);
+    if (color === undefined) {
+      throw new Error(`Missing color for index ${index}`);
+    }
+    const cross = new ProposedRowOrColumn(this.base.cross[this.base.index], [[index, color]]);
+    return cross.valid;
+  }
+}
+
+
+// Export things to the JavaScript console.
+declare global {
+  var hcn: any;
+}
+
+window.hcn = { CellColor, decodePuzzleDescription, Puzzle, showPuzzle, ProposedRowOrColumn }
