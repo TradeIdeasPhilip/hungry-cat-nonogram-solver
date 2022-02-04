@@ -197,22 +197,31 @@ const columnsTextArea = getById("columns", HTMLTextAreaElement);
 const rowsTextArea = getById("rows", HTMLTextAreaElement);
 const load3PartsButton = getById("load3Parts", HTMLButtonElement);
 const colorSamplesDiv = getById("colorSamples", HTMLDivElement);
-load3PartsButton.addEventListener("click", () => {
-    colorSamplesDiv.innerText = "";
-    const endOfLine = /\r?\n/g;
-    const colors = [];
+const endOfLine = /\r?\n/g;
+function getColorsFromGUI() {
+    const result = [];
     colorsTextArea.value.split(endOfLine).forEach((line) => {
         line = line.trim();
         if (line != "") {
-            colors.push(line);
+            result.push(line);
         }
     });
+    return result;
+}
+function updateColorSamples() {
+    colorSamplesDiv.innerText = "";
+    const colors = getColorsFromGUI();
     colors.forEach((color) => {
         const span = document.createElement("span");
         span.innerText = "★★★";
         span.style.color = color;
         colorSamplesDiv.appendChild(span);
     });
+}
+colorsTextArea.addEventListener("input", updateColorSamples);
+updateColorSamples();
+load3PartsButton.addEventListener("click", () => {
+    const colors = getColorsFromGUI();
     function getRequirements(from) {
         const result = [];
         from.value.split(endOfLine).forEach((line) => {
@@ -256,30 +265,6 @@ load3PartsButton.addEventListener("click", () => {
     puzzle.checkIntersections();
     showPuzzle(outputTable, puzzle);
 });
-class KnownColorList {
-    upstream;
-    newColors;
-    constructor(newColors, upstream = undefined) {
-        this.upstream = upstream;
-        this.newColors = new Map(newColors);
-        if (upstream) {
-            newColors.forEach((kvp) => {
-                const index = kvp[0];
-                const newColor = kvp[1];
-                const previousColor = upstream.get(index);
-                if (previousColor !== newColor && previousColor !== undefined) {
-                    throw new Error(`Attempt to overwrite an existing color.  index=${index}, newColor=${newColor}, previousColor=${previousColor}`);
-                }
-            });
-        }
-    }
-    get(index) {
-        return this.newColors.get(index) ?? this.upstream?.get(index);
-    }
-    has(index) {
-        return this.get(index) !== undefined;
-    }
-}
 class ProposedRowOrColumn {
     valid;
     known;

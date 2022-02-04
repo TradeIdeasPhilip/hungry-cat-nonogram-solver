@@ -330,22 +330,35 @@ const rowsTextArea = getById("rows", HTMLTextAreaElement);
 const load3PartsButton = getById("load3Parts", HTMLButtonElement);
 const colorSamplesDiv = getById("colorSamples", HTMLDivElement);
 
-load3PartsButton.addEventListener("click", () => {
-  colorSamplesDiv.innerText = "";
-  const endOfLine = /\r?\n/g;
-  const colors: string[] = [];
+const endOfLine = /\r?\n/g;
+
+function getColorsFromGUI() : string[] {
+  const result: string[] = [];
   colorsTextArea.value.split(endOfLine).forEach((line) => {
     line = line.trim();
     if (line != "") {
-      colors.push(line);
+      result.push(line);
     }
   });
+  return result;
+}
+
+function updateColorSamples() {
+  colorSamplesDiv.innerText = "";
+  const colors = getColorsFromGUI();
   colors.forEach((color) => {
     const span = document.createElement("span");
     span.innerText = "★★★";
     span.style.color = color;
     colorSamplesDiv.appendChild(span);
   });
+}
+
+colorsTextArea.addEventListener("input", updateColorSamples);
+updateColorSamples();
+
+load3PartsButton.addEventListener("click", () => {
+  const colors = getColorsFromGUI();
   function getRequirements(from: HTMLTextAreaElement) {
     const result: ColorRequirements[][] = [];
     from.value.split(endOfLine).forEach((line) => {
@@ -392,43 +405,6 @@ load3PartsButton.addEventListener("click", () => {
   puzzle.checkIntersections();
   showPuzzle(outputTable, puzzle);
 });
-
-/**
- * This was my first attempt at what became `ProposedRowOrColumn`.
- * 
- * ~~This is a map from an index (i.e. 0 for the first item in the row) to a color (i.e. 1 for the second color in our universe of colors).~~
- *
- * ~~This is a readonly data structure.
- * The idea is that we might build up several color lists at once, to see which ones make might work.
- * You can add new colors by referencing an existing color list.~~
- */
-class KnownColorList {
-  private readonly newColors: ReadonlyMap<number, number>;
-  constructor(
-    newColors: [index: number, color: number][],
-    private readonly upstream: KnownColorList | undefined = undefined
-  ) {
-    this.newColors = new Map(newColors);
-    if (upstream) {
-      newColors.forEach((kvp) => {
-        const index = kvp[0];
-        const newColor = kvp[1];
-        const previousColor = upstream.get(index);
-        if (previousColor !== newColor && previousColor !== undefined) {
-          throw new Error(
-            `Attempt to overwrite an existing color.  index=${index}, newColor=${newColor}, previousColor=${previousColor}`
-          );
-        }
-      });
-    }
-  }
-  get(index: number): number | unknown {
-    return this.newColors.get(index) ?? this.upstream?.get(index);
-  }
-  has(index: number): boolean {
-    return this.get(index) !== undefined;
-  }
-}
 
 /**
  * This is the playground where I try to pick colors just to see what will happen.
