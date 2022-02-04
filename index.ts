@@ -1,4 +1,5 @@
 import { getById } from "./lib/client-misc.js";
+import { zip } from "./lib/misc.js";
 
 /**
  * This is what you might see at the top of a column or on the left of a row.
@@ -194,14 +195,14 @@ type RowOrColumn = {
 class Puzzle {
   private readonly rows: ReadonlyArray<RowOrColumn>;
   private readonly columns: ReadonlyArray<RowOrColumn>;
-  getRow(index : number) : ProposedRowOrColumn {
+  getRow(index: number): ProposedRowOrColumn {
     const result = this.rows[0];
     if (!result) {
       throw new Error(`Unknown row number: ${index}`);
     }
     return new ProposedRowOrColumn(result);
   }
-  getColumn(index : number) : ProposedRowOrColumn {
+  getColumn(index: number): ProposedRowOrColumn {
     const result = this.columns[0];
     if (!result) {
       throw new Error(`Unknown column number: ${index}`);
@@ -298,18 +299,59 @@ class Puzzle {
 }
 
 function showPuzzle(destination: HTMLTableElement, source: Puzzle) {
+  function showRequirements(
+    rDestination: HTMLElement,
+    rSource: readonly ColorRequirements[]
+  ) {
+    for (const [color, requirements] of zip(
+      source.description.colors,
+      rSource
+    )) {
+      const row = document.createElement("div");
+      row.classList.add("headerColorGroup");
+      const sample = document.createElement("span");
+      sample.innerText = requirements.count ? "★" : "☆";
+      sample.style.color = color;
+      sample.classList.add("gradientBackground");
+      row.appendChild(sample);
+      if (requirements.count) {
+        row.append(requirements.count.toString());
+        if (requirements.allInARow) {
+          row.append("•");
+        }
+      }
+      row.append();
+      rDestination.appendChild(row);
+    }
+  }
   destination.innerText = "";
+  const topRow = destination.insertRow();
+  topRow.insertCell();
+  source.description.columns.forEach((column) => {
+    const cell = topRow.insertCell();
+    showRequirements(cell, column);
+  });
   const forDisplay = source.forDisplay();
-  forDisplay.forEach((rowSource) => {
+  for (const [requirements, rowSource] of zip(
+    source.description.columns,
+    forDisplay
+  )) {
     const row = destination.insertRow();
+    const headerCell = row.insertCell();
+    const headerCellWrapper = document.createElement("div");
+    headerCell.appendChild(headerCellWrapper);
+    headerCellWrapper.classList.add("rowHeader");
+    showRequirements(headerCellWrapper, requirements);
     rowSource.forEach((cellStyle) => {
       const cell = row.insertCell();
       cell.style.width = "1em";
       if (cellStyle !== undefined) {
         cell.style.background = cellStyle;
+      } else {
+        cell.classList.add("anyColor");
       }
     });
-  });
+  }
   hcn.lastShown = source;
 }
 
@@ -332,7 +374,7 @@ const colorSamplesDiv = getById("colorSamples", HTMLDivElement);
 
 const endOfLine = /\r?\n/g;
 
-function getColorsFromGUI() : string[] {
+function getColorsFromGUI(): string[] {
   const result: string[] = [];
   colorsTextArea.value.split(endOfLine).forEach((line) => {
     line = line.trim();
@@ -350,6 +392,7 @@ function updateColorSamples() {
     const span = document.createElement("span");
     span.innerText = "★★★";
     span.style.color = color;
+    span.classList.add("gradientBackground");
     colorSamplesDiv.appendChild(span);
   });
 }
@@ -408,7 +451,7 @@ load3PartsButton.addEventListener("click", () => {
 
 /**
  * This is the playground where I try to pick colors just to see what will happen.
- * 
+ *
  * This is readonly.
  * The idea is that I will have a lot of these at once as I explore different possibilities.
  */
@@ -418,19 +461,19 @@ class ProposedRowOrColumn {
    * True if no obvious rule was broken.
    * This only looks at the colors selected in this row or column and the requirements for this same row or column.
    */
-  public readonly valid : boolean;
+  public readonly valid: boolean;
   /**
    * This maps from an index (0 for the first row or column, 1 for the second, etc.) to a color.
    * If the color for this index is unknown, there is no entry in the table.
    */
-  private readonly known : ReadonlyMap<number, number>;
+  private readonly known: ReadonlyMap<number, number>;
   /**
    * This is the row or column I started with.
    * I keep this mostly for the requirements.
    */
   private readonly base: RowOrColumn;
   /**
-   * 
+   *
    * @param base I am creating these in small steps.
    * I will start from an actual RowOrColumn.
    * Then I'll add a small number of colors at a time.
@@ -440,7 +483,7 @@ class ProposedRowOrColumn {
    * These are organized just like the input to a map constructor.
    * If you name an index-color pair that already exists, it is silently ignored.
    * If you name an index-color pair that conflicts with an existing pair, that's an error.
-   * 
+   *
    * The default is to add nothing.
    * That is useful when converting a RowOrColumn to a ProposedRowOrColumn.
    * Remember that RowOrColumn is **not** read only, so it can be safer to export a ProposedRowOrColumn.
@@ -448,20 +491,20 @@ class ProposedRowOrColumn {
    * Other illegal stuff, like trying to add too many or a single color, will just set the valid flag to false.
    */
   constructor(
-    base : ProposedRowOrColumn | RowOrColumn,
+    base: ProposedRowOrColumn | RowOrColumn,
     add: [index: number, color: number][] | undefined = undefined
   ) {
-    let known : Map<number, number>;
+    let known: Map<number, number>;
     if (base instanceof ProposedRowOrColumn) {
       if (!base.valid) {
-        throw new Error("Cannot build on top of an invalid row or column.")
+        throw new Error("Cannot build on top of an invalid row or column.");
       }
       this.base = base.base;
       known = new Map(base.known);
     } else {
       this.base = base;
       known = new Map();
-      base.cells.forEach((cell,index) => {
+      base.cells.forEach((cell, index) => {
         const color = cell.color;
         if (color !== undefined) {
           known.set(index, color);
@@ -486,7 +529,11 @@ class ProposedRowOrColumn {
         }
       }
       const allRequirements = this.base.requirements;
-      for (let colorToCheck = 0; valid && (colorToCheck < allRequirements.length); colorToCheck++) {
+      for (
+        let colorToCheck = 0;
+        valid && colorToCheck < allRequirements.length;
+        colorToCheck++
+      ) {
         const requirements = allRequirements[colorToCheck];
         if (requirements.allInARow) {
           let mustEndBefore = -1;
@@ -516,7 +563,6 @@ class ProposedRowOrColumn {
             }
           }
         }
-        
       }
     }
     this.valid = valid;
@@ -524,15 +570,15 @@ class ProposedRowOrColumn {
   /**
    * Check a color against the other row or column, the one that crosses this one at the
    * specified index.
-   * 
+   *
    * Note that there are three different places where we store rules.  The row or column
    * we are looking at has its requirements, the cross row or column has similar requirements,
    * and the cell itself can remember that certain colors have been marked as impossible.
    * This function is only checking the cross row or column.
    * @param index The index of the cell in the current row or column.
-   * @param color The color to test.  
+   * @param color The color to test.
    * By default this will read the current color out of the given index in this row or column.
-   * 
+   *
    * Use the default if you've already set this color.
    * Specify a color if you want to check before setting this color.
    * @returns True if the cross row or column allows this color to be placed at this location.
@@ -540,20 +586,27 @@ class ProposedRowOrColumn {
    * @throws If you specify an index that is out of bounds, or if the color is completely unknown,
    * or if the specified color conflicts with an existing color, this will throw an `Error`.
    */
-  tryCross(index : number, color? : number) : boolean {
+  tryCross(index: number, color?: number): boolean {
     color ??= this.known.get(index);
     if (color === undefined) {
       throw new Error(`Missing color for index ${index}`);
     }
-    const cross = new ProposedRowOrColumn(this.base.cross[this.base.index], [[index, color]]);
+    const cross = new ProposedRowOrColumn(this.base.cross[this.base.index], [
+      [index, color],
+    ]);
     return cross.valid;
   }
 }
-
 
 // Export things to the JavaScript console.
 declare global {
   var hcn: any;
 }
 
-window.hcn = { CellColor, decodePuzzleDescription, Puzzle, showPuzzle, ProposedRowOrColumn }
+window.hcn = {
+  CellColor,
+  decodePuzzleDescription,
+  Puzzle,
+  showPuzzle,
+  ProposedRowOrColumn,
+};

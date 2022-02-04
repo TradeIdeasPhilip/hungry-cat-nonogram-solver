@@ -1,4 +1,5 @@
 import { getById } from "./lib/client-misc.js";
+import { zip } from "./lib/misc.js";
 class CellColor {
     possible = new Set();
     constructor(colorCount) {
@@ -169,18 +170,51 @@ class Puzzle {
     }
 }
 function showPuzzle(destination, source) {
+    function showRequirements(rDestination, rSource) {
+        for (const [color, requirements] of zip(source.description.colors, rSource)) {
+            const row = document.createElement("div");
+            row.classList.add("headerColorGroup");
+            const sample = document.createElement("span");
+            sample.innerText = requirements.count ? "★" : "☆";
+            sample.style.color = color;
+            sample.classList.add("gradientBackground");
+            row.appendChild(sample);
+            if (requirements.count) {
+                row.append(requirements.count.toString());
+                if (requirements.allInARow) {
+                    row.append("•");
+                }
+            }
+            row.append();
+            rDestination.appendChild(row);
+        }
+    }
     destination.innerText = "";
+    const topRow = destination.insertRow();
+    topRow.insertCell();
+    source.description.columns.forEach((column) => {
+        const cell = topRow.insertCell();
+        showRequirements(cell, column);
+    });
     const forDisplay = source.forDisplay();
-    forDisplay.forEach((rowSource) => {
+    for (const [requirements, rowSource] of zip(source.description.columns, forDisplay)) {
         const row = destination.insertRow();
+        const headerCell = row.insertCell();
+        const headerCellWrapper = document.createElement("div");
+        headerCell.appendChild(headerCellWrapper);
+        headerCellWrapper.classList.add("rowHeader");
+        showRequirements(headerCellWrapper, requirements);
         rowSource.forEach((cellStyle) => {
             const cell = row.insertCell();
             cell.style.width = "1em";
             if (cellStyle !== undefined) {
                 cell.style.background = cellStyle;
             }
+            else {
+                cell.classList.add("anyColor");
+            }
         });
-    });
+    }
     hcn.lastShown = source;
 }
 const requirementsTextArea = getById("requirements", HTMLTextAreaElement);
@@ -215,6 +249,7 @@ function updateColorSamples() {
         const span = document.createElement("span");
         span.innerText = "★★★";
         span.style.color = color;
+        span.classList.add("gradientBackground");
         colorSamplesDiv.appendChild(span);
     });
 }
@@ -303,7 +338,7 @@ class ProposedRowOrColumn {
                 }
             }
             const allRequirements = this.base.requirements;
-            for (let colorToCheck = 0; valid && (colorToCheck < allRequirements.length); colorToCheck++) {
+            for (let colorToCheck = 0; valid && colorToCheck < allRequirements.length; colorToCheck++) {
                 const requirements = allRequirements[colorToCheck];
                 if (requirements.allInARow) {
                     let mustEndBefore = -1;
@@ -342,9 +377,17 @@ class ProposedRowOrColumn {
         if (color === undefined) {
             throw new Error(`Missing color for index ${index}`);
         }
-        const cross = new ProposedRowOrColumn(this.base.cross[this.base.index], [[index, color]]);
+        const cross = new ProposedRowOrColumn(this.base.cross[this.base.index], [
+            [index, color],
+        ]);
         return cross.valid;
     }
 }
-window.hcn = { CellColor, decodePuzzleDescription, Puzzle, showPuzzle, ProposedRowOrColumn };
+window.hcn = {
+    CellColor,
+    decodePuzzleDescription,
+    Puzzle,
+    showPuzzle,
+    ProposedRowOrColumn,
+};
 //# sourceMappingURL=index.js.map

@@ -1,8 +1,16 @@
 #output TD {
   width: 1em;
   height: 1em;
+}
+.anyColor {
   background: conic-gradient(#fcc, #ffc, #cfc, #cff, #ccf, #fcf);
 }
-#colorSamples span {
-  background: linear-gradient(to left, black, white);
+.rowHeader {
+  display: flex;
+}
+.headerColorGroup {
+  width: 2.5em;
+}
+.gradientBackground {
+  background: linear-gradient(to right, black, white);
 }
