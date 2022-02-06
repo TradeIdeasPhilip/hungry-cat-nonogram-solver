@@ -231,8 +231,15 @@ class Puzzle {
             const toInvestigate = possibilities;
             possibilities = [];
             if (index == sortedRequirements.length - 1) {
-                const toAdd = Array.from(count(0, base.cells.length), (index) => [index, color]);
                 toInvestigate.forEach((startFrom) => {
+                    const toAdd = base.cells.flatMap((_, index) => {
+                        if (startFrom.isPossible(index, color)) {
+                            return [[index, color]];
+                        }
+                        else {
+                            return [];
+                        }
+                    });
                     const newProposal = new ProposedRowOrColumn(startFrom, toAdd);
                     if (newProposal.valid) {
                         possibilities.push(newProposal);
@@ -315,7 +322,6 @@ class Puzzle {
         });
     }
     examineRowOrColumn(toExamine) {
-        this.examineCrosses(toExamine);
         this.examineRowOrColumnBody(toExamine);
     }
     examineRow(index) {
@@ -373,15 +379,6 @@ function showPuzzle(destination, source) {
         rowSource.forEach((cellStyle) => {
             const cell = row.insertCell();
             cell.style.width = "1em";
-            const background1 = "conic-gradient(from " +
-                Math.random() +
-                "turn, " +
-                [...cellStyle, ...cellStyle].join(", ") +
-                ")";
-            const background2 = "linear-gradient(90deg, " +
-                [...cellStyle, ...cellStyle].join(", ") +
-                ")";
-            const rotate = Math.random() * 100;
             const background = "conic-gradient(" +
                 cellStyle
                     .map((color, index) => `${color} ${(index / cellStyle.length) * 100}% ${((index + 1) / cellStyle.length) * 100}%`)
@@ -504,8 +501,7 @@ class ProposedRowOrColumn {
         this.known = known;
         let valid = true;
         if (add !== undefined) {
-            for (const kvp of add) {
-                const [index, color] = kvp;
+            for (const [index, color] of add) {
                 const previousColor = known.get(index);
                 if (previousColor === undefined) {
                     known.set(index, color);
@@ -520,8 +516,7 @@ class ProposedRowOrColumn {
                 const requirements = allRequirements[colorToCheck];
                 if (requirements.allInARow) {
                     let mustEndBefore = -1;
-                    for (const kvp of known) {
-                        const [index, colorOfCell] = kvp;
+                    for (const [index, colorOfCell] of known) {
                         if (colorOfCell === colorToCheck) {
                             if (mustEndBefore == -1) {
                                 mustEndBefore = index + requirements.count;
@@ -535,8 +530,7 @@ class ProposedRowOrColumn {
                 }
                 else {
                     let stillAllowed = requirements.count;
-                    for (const kvp of known) {
-                        const [index, colorOfCell] = kvp;
+                    for (const [index, colorOfCell] of known) {
                         if (colorOfCell === colorToCheck) {
                             stillAllowed--;
                             if (stillAllowed < 0) {
@@ -579,6 +573,15 @@ class ProposedRowOrColumn {
         }
         else {
             return this.base.cells[index].colors;
+        }
+    }
+    isPossible(index, color) {
+        const proposedColor = this.known.get(index);
+        if (proposedColor !== undefined) {
+            return proposedColor == color;
+        }
+        else {
+            return this.base.cells[index].isPossible(color);
         }
     }
 }
