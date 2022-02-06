@@ -131,3 +131,9 @@ export function* zip<T extends Array<any>>(
       yield results.map(({ value }) => value) as T
   }
 }
+
+export function *count(start = 0, end = Infinity, step = 1){
+  for (let i = start; i < end; i += step) {
+    yield i;
+  }
+}

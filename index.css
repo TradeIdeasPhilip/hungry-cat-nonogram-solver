@@ -7,6 +7,11 @@
 }
 .rowHeader {
   display: flex;
+  min-height: 2.5em;
+  align-items: center;
+}
+.encircle {
+  clip-path:circle(1.25em);
 }
 .headerColorGroup {
   width: 2.5em;

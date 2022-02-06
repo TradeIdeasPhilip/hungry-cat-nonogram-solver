@@ -1,5 +1,5 @@
 import { getById } from "./lib/client-misc.js";
-import { zip } from "./lib/misc.js";
+import { count, zip } from "./lib/misc.js";
 class CellColor {
     possible = new Set();
     constructor(colorCount) {
@@ -142,9 +142,10 @@ class Puzzle {
         });
     }
     forDisplay() {
-        return this.rows.map((row) => row.cells.map((cellColor) => cellColor.colors.map(color => this.description.colors[color])));
+        return this.rows.map((row) => row.cells.map((cellColor) => cellColor.colors.map((color) => this.description.colors[color])));
     }
     checkIntersections() {
+        return;
         function allowed(allRequirements) {
             const result = new Set();
             allRequirements.forEach((colorRequirements, color) => {
@@ -162,6 +163,149 @@ class Puzzle {
                 cellColor.limitTo(allowedInColumn[columnIndex]);
             });
         });
+    }
+    examineCrosses(from) {
+        from.cells.forEach((cell, index) => {
+            if (!cell.known) {
+                const crossOriginal = new ProposedRowOrColumn(from.cross[index]);
+                cell.colors.forEach((proposedColor) => {
+                    const cross = new ProposedRowOrColumn(crossOriginal, [
+                        [from.index, proposedColor],
+                    ]);
+                    if (!cross.valid) {
+                        cell.eliminate(proposedColor);
+                    }
+                });
+            }
+        });
+    }
+    examineRowOrColumnBody(base) {
+        const colorsRemainingInInitial = base.requirements.map((requirements) => requirements.count);
+        for (const cell of base.cells) {
+            const color = cell.color;
+            if (color !== undefined) {
+                colorsRemainingInInitial[color]--;
+            }
+        }
+        const sortedRequirements = base.requirements.flatMap((requirements, color) => {
+            if (colorsRemainingInInitial[color] < 1) {
+                return [];
+            }
+            else {
+                return [{ color, requirements }];
+            }
+        });
+        sortedRequirements.sort((a, b) => {
+            if (a.requirements.allInARow && !b.requirements.allInARow) {
+                return -1;
+            }
+            else if (b.requirements.allInARow && !a.requirements.allInARow) {
+                return 1;
+            }
+            else if (a.requirements.allInARow) {
+                return b.requirements.count - a.requirements.count;
+            }
+            else {
+                return 0;
+            }
+        });
+        let possibilities = [new ProposedRowOrColumn(base)];
+        sortedRequirements.forEach(({ color, requirements }, index) => {
+            const toInvestigate = possibilities;
+            possibilities = [];
+            if (index == sortedRequirements.length - 1) {
+                const toAdd = Array.from(count(0, base.cells.length), (index) => [index, color]);
+                toInvestigate.forEach((startFrom) => {
+                    const newProposal = new ProposedRowOrColumn(startFrom, toAdd);
+                    if (newProposal.valid) {
+                        possibilities.push(newProposal);
+                    }
+                });
+            }
+            else if (requirements.allInARow) {
+                const lastStart = base.cells.length - requirements.count;
+                for (let start = 0; start <= lastStart; start++) {
+                    const toAdd = Array.from(count(start, start + requirements.count), (index) => [index, color]);
+                    toInvestigate.forEach((startFrom) => {
+                        const newProposal = new ProposedRowOrColumn(startFrom, toAdd);
+                        if (newProposal.valid) {
+                            possibilities.push(newProposal);
+                        }
+                    });
+                }
+            }
+            else {
+                toInvestigate.forEach((beforeThisColor) => {
+                    const available = base.cells.flatMap((_, index) => {
+                        if (beforeThisColor.isKnown(index)) {
+                            return [];
+                        }
+                        else if (beforeThisColor
+                            .colors(index)
+                            .every((possibleMatch) => possibleMatch != color)) {
+                            return [];
+                        }
+                        else {
+                            return [index];
+                        }
+                    });
+                    function find(cellsAvailableCount, howManyMoreToAdd, toAdd) {
+                        if (cellsAvailableCount < howManyMoreToAdd) {
+                        }
+                        else if (cellsAvailableCount == howManyMoreToAdd) {
+                            toAdd = [...available.slice(0, cellsAvailableCount), ...toAdd];
+                            const includingThisColor = new ProposedRowOrColumn(beforeThisColor, toAdd.map((index) => [index, color]));
+                            if (includingThisColor.valid) {
+                                possibilities.push(includingThisColor);
+                            }
+                        }
+                        else if (howManyMoreToAdd == 0) {
+                            const includingThisColor = new ProposedRowOrColumn(beforeThisColor, toAdd.map((index) => [index, color]));
+                            if (includingThisColor.valid) {
+                                possibilities.push(includingThisColor);
+                            }
+                        }
+                        else {
+                            cellsAvailableCount--;
+                            find(cellsAvailableCount, howManyMoreToAdd, toAdd);
+                            const index = available[cellsAvailableCount];
+                            find(cellsAvailableCount, howManyMoreToAdd - 1, [
+                                index,
+                                ...toAdd,
+                            ]);
+                        }
+                    }
+                    find(0, colorsRemainingInInitial[color], []);
+                });
+            }
+        });
+        if (possibilities.length == 0) {
+            throw new Error("Impossible state.");
+        }
+        base.cells.forEach((cell, index) => {
+            if (!cell.known) {
+                const notFoundYet = new Set(count(0, base.requirements.length));
+                possibilities.forEach(possibility => {
+                    const colors = possibility.colors(index);
+                    colors.forEach(color => {
+                        notFoundYet.delete(color);
+                    });
+                });
+                notFoundYet.forEach(color => {
+                    cell.eliminate(color);
+                });
+            }
+        });
+    }
+    examineRowOrColumn(toExamine) {
+        this.examineCrosses(toExamine);
+        this.examineRowOrColumnBody(toExamine);
+    }
+    examineRow(index) {
+        this.examineRowOrColumn(this.rows[index]);
+    }
+    examineColumn(index) {
+        this.examineRowOrColumn(this.columns[index]);
     }
 }
 function showPuzzle(destination, source) {
@@ -187,27 +331,49 @@ function showPuzzle(destination, source) {
     destination.innerText = "";
     const topRow = destination.insertRow();
     topRow.insertCell();
-    source.description.columns.forEach((column) => {
+    source.description.columns.forEach((columnRequirements, columnIndex) => {
         const cell = topRow.insertCell();
-        showRequirements(cell, column);
+        showRequirements(cell, columnRequirements);
+        cell.addEventListener("click", () => {
+            source.examineColumn(columnIndex);
+            showPuzzle(destination, source);
+        });
+        cell.style.cursor = (columnIndex % 2) ? "cell" : "crosshair";
     });
     const forDisplay = source.forDisplay();
-    for (const [requirements, rowSource] of zip(source.description.columns, forDisplay)) {
+    for (const [requirements, rowSource, rowIndex] of zip(source.description.columns, forDisplay, count())) {
         const row = destination.insertRow();
         const headerCell = row.insertCell();
         const headerCellWrapper = document.createElement("div");
         headerCell.appendChild(headerCellWrapper);
         headerCellWrapper.classList.add("rowHeader");
         showRequirements(headerCellWrapper, requirements);
+        headerCellWrapper.addEventListener("click", () => {
+            source.examineRow(rowIndex);
+            showPuzzle(destination, source);
+        });
+        headerCellWrapper.style.cursor = (rowIndex % 2) ? "cell" : "crosshair";
         rowSource.forEach((cellStyle) => {
             const cell = row.insertCell();
             cell.style.width = "1em";
-            cell.classList.add("findMe");
-            const background1 = "conic-gradient(from " + Math.random() + "turn, " + [...cellStyle, ...cellStyle].join(", ") + ")";
-            const background2 = "linear-gradient(90deg, " + [...cellStyle, ...cellStyle].join(", ") + ")";
+            const background1 = "conic-gradient(from " +
+                Math.random() +
+                "turn, " +
+                [...cellStyle, ...cellStyle].join(", ") +
+                ")";
+            const background2 = "linear-gradient(90deg, " +
+                [...cellStyle, ...cellStyle].join(", ") +
+                ")";
             const rotate = Math.random() * 100;
-            const background = "conic-gradient(" + cellStyle.map((color, index) => `${color} ${index / cellStyle.length * 100}% ${(index + 1) / cellStyle.length * 100}%`).join(", ") + ")";
+            const background = "conic-gradient(" +
+                cellStyle
+                    .map((color, index) => `${color} ${(index / cellStyle.length) * 100}% ${((index + 1) / cellStyle.length) * 100}%`)
+                    .join(", ") +
+                ")";
             cell.style.background = background;
+            if (cellStyle.length > 1) {
+                cell.classList.add("encircle");
+            }
         });
     }
     hcn.lastShown = source;
@@ -376,6 +542,27 @@ class ProposedRowOrColumn {
             [index, color],
         ]);
         return cross.valid;
+    }
+    [Symbol.iterator]() {
+        if (!this.valid) {
+            throw new Error("wtf");
+        }
+        return this.known[Symbol.iterator]();
+    }
+    isKnown(index) {
+        return this.known.has(index);
+    }
+    color(index) {
+        return this.known.get(index) ?? this.base.cells[index].color;
+    }
+    colors(index) {
+        const proposedColor = this.known.get(index);
+        if (proposedColor !== undefined) {
+            return [proposedColor];
+        }
+        else {
+            return this.base.cells[index].colors;
+        }
     }
 }
 window.hcn = {

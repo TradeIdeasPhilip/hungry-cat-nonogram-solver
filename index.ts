@@ -1,5 +1,5 @@
 import { getById } from "./lib/client-misc.js";
-import { zip } from "./lib/misc.js";
+import { count, zip } from "./lib/misc.js";
 
 /**
  * This is what you might see at the top of a column or on the left of a row.
@@ -262,7 +262,10 @@ class Puzzle {
    */
   forDisplay(): string[][][] {
     return this.rows.map((row) =>
-      row.cells.map((cellColor) => cellColor.colors.map(color => this.description.colors[color])));
+      row.cells.map((cellColor) =>
+        cellColor.colors.map((color) => this.description.colors[color])
+      )
+    );
   }
   /**
    * A very simple start.  This just looks at the original requirements for each row and column.
@@ -271,6 +274,8 @@ class Puzzle {
    * I.e. filling in data about one cell will not help this algorithm work on other cells.
    */
   checkIntersections(): void {
+    // This seems to be buggy.  TODO fix it or remove it.
+    return;
     function allowed(allRequirements: readonly ColorRequirements[]) {
       const result = new Set<number>();
       allRequirements.forEach((colorRequirements, color) => {
@@ -290,6 +295,190 @@ class Puzzle {
         cellColor.limitTo(allowedInColumn[columnIndex]);
       });
     });
+  }
+  private examineCrosses(from: RowOrColumn) {
+    from.cells.forEach((cell, index) => {
+      if (!cell.known) {
+        const crossOriginal = new ProposedRowOrColumn(from.cross[index]);
+        cell.colors.forEach((proposedColor) => {
+          const cross = new ProposedRowOrColumn(crossOriginal, [
+            [from.index, proposedColor],
+          ]);
+          if (!cross.valid) {
+            cell.eliminate(proposedColor);
+          }
+        });
+      }
+    });
+  }
+  private examineRowOrColumnBody(base: RowOrColumn) {
+    const colorsRemainingInInitial = base.requirements.map(
+      (requirements) => requirements.count
+    );
+    for (const cell of base.cells) {
+      const color = cell.color;
+      if (color !== undefined) {
+        colorsRemainingInInitial[color]--;
+      }
+    }
+    const sortedRequirements = base.requirements.flatMap(
+      (requirements, color) => {
+        if (colorsRemainingInInitial[color] < 1) {
+          return [];
+        } else {
+          return [{ color, requirements }];
+        }
+      }
+    );
+    sortedRequirements.sort((a, b) => {
+      // Put the all in a row requirements before the other requirements.
+      if (a.requirements.allInARow && !b.requirements.allInARow) {
+        return -1;
+      } else if (b.requirements.allInARow && !a.requirements.allInARow) {
+        return 1;
+      } else if (a.requirements.allInARow) {
+        // If two requirements are both all in a row, put the one of the largest number of required cells first.
+        return b.requirements.count - a.requirements.count;
+      } else {
+        // If neither requirement is all in a row, don't worry about the order.
+        return 0;
+      }
+    });
+
+    let possibilities = [new ProposedRowOrColumn(base)];
+
+    sortedRequirements.forEach(({ color, requirements }, index) => {
+      const toInvestigate = possibilities;
+      possibilities = [];
+      if (index == sortedRequirements.length - 1) {
+        const toAdd = Array.from(
+          count(0, base.cells.length),
+          (index) => [index, color] as const
+        );
+        toInvestigate.forEach((startFrom) => {
+          const newProposal = new ProposedRowOrColumn(startFrom, toAdd);
+          if (newProposal.valid) {
+            possibilities.push(newProposal);
+          }
+        });
+      } else if (requirements.allInARow) {
+        const lastStart = base.cells.length - requirements.count;
+        for (let start = 0; start <= lastStart; start++) {
+          const toAdd = Array.from(
+            count(start, start + requirements.count),
+            (index) => [index, color] as const
+          );
+          toInvestigate.forEach((startFrom) => {
+            const newProposal = new ProposedRowOrColumn(startFrom, toAdd);
+            if (newProposal.valid) {
+              possibilities.push(newProposal);
+            }
+          });
+        }
+      } else {
+        toInvestigate.forEach((beforeThisColor) => {
+          const available = base.cells.flatMap((_, index) => {
+            if (beforeThisColor.isKnown(index)) {
+              // The color has already been chosen.  There is no reason to look at this.
+              return [];
+            } else if (
+              beforeThisColor
+                .colors(index)
+                .every((possibleMatch) => possibleMatch != color)
+            ) {
+              // The color we are working on will not fit at this index.
+              // There is no reason to look at this index again.
+              return [];
+            } else {
+              return [index];
+            }
+          });
+          function find(
+            cellsAvailableCount: number,
+            howManyMoreToAdd: number,
+            toAdd: readonly number[]
+          ) {
+            // TODO new ProposedRowOrColumn() should be smarter.
+            // I should be able to create a new ProposedRowOrColumn() every time I select a color.
+            // toAdd would go away.
+            if (cellsAvailableCount < howManyMoreToAdd) {
+              // Nothing is possible.  Give up on this proposal.
+            } else if (cellsAvailableCount == howManyMoreToAdd) {
+              // No more choices.  Fill in each remaining cell with the current color.
+              toAdd = [...available.slice(0, cellsAvailableCount), ...toAdd];
+              const includingThisColor = new ProposedRowOrColumn(
+                beforeThisColor,
+                toAdd.map((index) => [index, color])
+              );
+              if (includingThisColor.valid) {
+                possibilities.push(includingThisColor);
+              }
+            } else if (howManyMoreToAdd == 0) {
+              // No more colors to place.  Try what we have.
+              const includingThisColor = new ProposedRowOrColumn(
+                beforeThisColor,
+                toAdd.map((index) => [index, color])
+              );
+              if (includingThisColor.valid) {
+                possibilities.push(includingThisColor);
+              }
+            } else {
+              // The next cell could go either way.  Let's try both.
+              cellsAvailableCount--;
+              find(cellsAvailableCount, howManyMoreToAdd, toAdd);
+              const index = available[cellsAvailableCount];
+              find(cellsAvailableCount, howManyMoreToAdd - 1, [
+                index,
+                ...toAdd,
+              ]);
+            }
+          }
+          find(0, colorsRemainingInInitial[color], []);
+        });
+      }
+    });
+
+    if (possibilities.length == 0) {
+      throw new Error("Impossible state.");
+    }
+    // TODO join all possibilities
+    // If all entries in possibilities agree that a certain color is not allowed in a certain cell, then we use that.
+    // Nothing else matters.
+    // That means that, for each index, take the intersection of the sets of possible colors, take the inverse of that, and mark those colors as impossible.
+    // foreach index in the list of cells
+    //   create the data structure:  a set initialized to contain all of the colors.  Called notFoundYet
+    //   foreach possibility in possibilities
+    //     get the .colors associated with this index in this possibility
+    //     foreach color in .colors
+    //       remove color from notFoundYet
+    //   foreach color in notFoundYet
+    //     eliminate color.
+    // ∎
+    base.cells.forEach((cell, index) => {
+      if (!cell.known) {
+        const notFoundYet = new Set(count(0, base.requirements.length));
+        possibilities.forEach(possibility => {
+          const colors = possibility.colors(index);
+          colors.forEach(color => {
+            notFoundYet.delete(color);
+          });
+        });
+        notFoundYet.forEach(color => {
+          cell.eliminate(color);
+        });
+      }
+    });
+
+  }
+  private examineRowOrColumn(toExamine: RowOrColumn) {
+    this.examineCrosses(toExamine);
+    this.examineRowOrColumnBody(toExamine);
+  }
+  public examineRow(index : number) {
+    this.examineRowOrColumn(this.rows[index]);
+  }
+  public examineColumn(index : number) {
+    this.examineRowOrColumn(this.columns[index]);
   }
 }
 
@@ -322,14 +511,20 @@ function showPuzzle(destination: HTMLTableElement, source: Puzzle) {
   destination.innerText = "";
   const topRow = destination.insertRow();
   topRow.insertCell();
-  source.description.columns.forEach((column) => {
+  source.description.columns.forEach((columnRequirements, columnIndex) => {
     const cell = topRow.insertCell();
-    showRequirements(cell, column);
+    showRequirements(cell, columnRequirements);
+    cell.addEventListener("click", () => {
+      source.examineColumn(columnIndex);
+      showPuzzle(destination, source);
+    });
+    cell.style.cursor = (columnIndex%2)?"cell":"crosshair";
   });
   const forDisplay = source.forDisplay();
-  for (const [requirements, rowSource] of zip(
+  for (const [requirements, rowSource, rowIndex] of zip(
     source.description.columns,
-    forDisplay
+    forDisplay,
+    count()
   )) {
     const row = destination.insertRow();
     const headerCell = row.insertCell();
@@ -337,16 +532,40 @@ function showPuzzle(destination: HTMLTableElement, source: Puzzle) {
     headerCell.appendChild(headerCellWrapper);
     headerCellWrapper.classList.add("rowHeader");
     showRequirements(headerCellWrapper, requirements);
+    headerCellWrapper.addEventListener("click", () => {
+      source.examineRow(rowIndex);
+      showPuzzle(destination, source);
+    });
+    headerCellWrapper.style.cursor = (rowIndex%2)?"cell":"crosshair";
     rowSource.forEach((cellStyle) => {
       const cell = row.insertCell();
       cell.style.width = "1em";
-      cell.classList.add("findMe");
-      const background1 = "conic-gradient(from " + Math.random() + "turn, " + [...cellStyle, ...cellStyle].join(", ") + ")";
-      const background2 = "linear-gradient(90deg, " + [...cellStyle, ...cellStyle].join(", ") + ")";
+      const background1 =
+        "conic-gradient(from " +
+        Math.random() +
+        "turn, " +
+        [...cellStyle, ...cellStyle].join(", ") +
+        ")";
+      const background2 =
+        "linear-gradient(90deg, " +
+        [...cellStyle, ...cellStyle].join(", ") +
+        ")";
       const rotate = Math.random() * 100;
-      const background = "conic-gradient(" + cellStyle.map((color, index) => 
-        `${color} ${index / cellStyle.length * 100}% ${(index+1) / cellStyle.length * 100}%`).join(", ") + ")";
+      const background =
+        "conic-gradient(" +
+        cellStyle
+          .map(
+            (color, index) =>
+              `${color} ${(index / cellStyle.length) * 100}% ${
+                ((index + 1) / cellStyle.length) * 100
+              }%`
+          )
+          .join(", ") +
+        ")";
       cell.style.background = background;
+      if (cellStyle.length > 1) {
+        cell.classList.add("encircle");
+      }
     });
   }
   hcn.lastShown = source;
@@ -468,7 +687,7 @@ class ProposedRowOrColumn {
    * This is the row or column I started with.
    * I keep this mostly for the requirements.
    */
-  private readonly base: RowOrColumn;
+  public readonly base: RowOrColumn;
   /**
    *
    * @param base I am creating these in small steps.
@@ -479,17 +698,18 @@ class ProposedRowOrColumn {
    * @param add The items to add.
    * These are organized just like the input to a map constructor.
    * If you name an index-color pair that already exists, it is silently ignored.
-   * If you name an index-color pair that conflicts with an existing pair, that's an error.
+   * If you name an index-color pair that conflicts with an existing pair, the result will be !valid.
    *
    * The default is to add nothing.
    * That is useful when converting a RowOrColumn to a ProposedRowOrColumn.
    * Remember that RowOrColumn is **not** read only, so it can be safer to export a ProposedRowOrColumn.
-   * @throws Trying to change an existing color will cause this to throw an exception.
-   * Other illegal stuff, like trying to add too many or a single color, will just set the valid flag to false.
+   * @throws If the base is !valid this will throw an error.
    */
   constructor(
     base: ProposedRowOrColumn | RowOrColumn,
-    add: [index: number, color: number][] | undefined = undefined
+    add:
+      | readonly (readonly [index: number, color: number])[]
+      | undefined = undefined
   ) {
     let known: Map<number, number>;
     if (base instanceof ProposedRowOrColumn) {
@@ -509,12 +729,12 @@ class ProposedRowOrColumn {
       });
     }
     this.known = known;
-    // It annoys me that this valid check is so slow.
-    // For simplicity this always checks everything.
-    // It seems like I should be able to do better because I know what's changing!
-    // Worst case, I try some tricks when I can, and I always fall back on this if my tricks are inconclusive.
     let valid = true;
     if (add !== undefined) {
+      // It annoys me that this valid check is so slow.
+      // For simplicity this always checks everything.
+      // It seems like I should be able to do better because I know what's changing!
+      // Worst case, I try some tricks when I can, and I always fall back on this if my tricks are inconclusive.
       for (const kvp of add) {
         const [index, color] = kvp;
         const previousColor = known.get(index);
@@ -592,6 +812,26 @@ class ProposedRowOrColumn {
       [index, color],
     ]);
     return cross.valid;
+  }
+  [Symbol.iterator]() {
+    if (!this.valid) {
+      throw new Error("wtf");
+    }
+    return this.known[Symbol.iterator]();
+  }
+  isKnown(index: number): boolean {
+    return this.known.has(index);
+  }
+  color(index: number): number | unknown {
+    return this.known.get(index) ?? this.base.cells[index].color;
+  }
+  colors(index: number): number[] {
+    const proposedColor = this.known.get(index);
+    if (proposedColor !== undefined) {
+      return [proposedColor];
+    } else {
+      return this.base.cells[index].colors;
+    }
   }
 }
 
