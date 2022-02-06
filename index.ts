@@ -1,5 +1,5 @@
 import { getById } from "./lib/client-misc.js";
-import { count, zip } from "./lib/misc.js";
+import { count, sum, zip } from "./lib/misc.js";
 
 /**
  * This is what you might see at the top of a column or on the left of a row.
@@ -212,7 +212,35 @@ class Puzzle {
     }
     return new ProposedRowOrColumn(result);
   }
+  /**
+   * Checks if the puzzle description looks good.
+   * If all appears well, this returns void.
+   * Otherwise it throws an `Error`.
+   * @param description The puzzle description to test.
+   * @throws If there is a problem, it is reported as an error.
+   * Effectively this method _asserts_ that the input is good.
+   * I've made no attempt at human readable error messages.
+   * This just points you to the right place in the debugger.
+   */
+  static verifyDescription(description: PuzzleDescription) {
+    const colorCount = description.colors.length;
+    function verifyOneDirection(numberOfCrossItems : number, requirementsForTable : readonly (readonly ColorRequirements[])[]) {
+      requirementsForTable.forEach(requirementsForRowOrColumn => {
+        if (colorCount != requirementsForRowOrColumn.length) {
+          throw new Error("wtf");
+        }
+        const requiredCellCount = sum(requirementsForRowOrColumn.map(requirementsForColor => requirementsForColor.count));
+        if (numberOfCrossItems != requiredCellCount) {
+          throw new Error("wtf");
+        }
+      });
+    }
+    verifyOneDirection(description.columns.length, description.rows);
+    verifyOneDirection(description.rows.length, description.columns);    
+    description.columns.length
+  }
   constructor(public readonly description: PuzzleDescription) {
+    Puzzle.verifyDescription(description);
     const colorCount = description.colors.length;
     const cellsRowColumn: CellColor[][] = [];
     description.rows.forEach((rowRequirements) => {
@@ -275,7 +303,7 @@ class Puzzle {
    */
   checkIntersections(): void {
     // This seems to be buggy.  TODO fix it or remove it.
-    return;
+    //return;
     function allowed(allRequirements: readonly ColorRequirements[]) {
       const result = new Set<number>();
       allRequirements.forEach((colorRequirements, color) => {
@@ -522,7 +550,7 @@ function showPuzzle(destination: HTMLTableElement, source: Puzzle) {
   });
   const forDisplay = source.forDisplay();
   for (const [requirements, rowSource, rowIndex] of zip(
-    source.description.columns,
+    source.description.rows,
     forDisplay,
     count()
   )) {

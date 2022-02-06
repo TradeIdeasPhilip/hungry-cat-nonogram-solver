@@ -137,3 +137,7 @@ export function *count(start = 0, end = Infinity, step = 1){
     yield i;
   }
 }
+
+export function sum(items : number[]) : number {
+  return items.reduce((accumulator, current) => accumulator + current, 0);
+}

@@ -1,5 +1,5 @@
 import { getById } from "./lib/client-misc.js";
-import { count, zip } from "./lib/misc.js";
+import { count, sum, zip } from "./lib/misc.js";
 class CellColor {
     possible = new Set();
     constructor(colorCount) {
@@ -100,8 +100,26 @@ class Puzzle {
         }
         return new ProposedRowOrColumn(result);
     }
+    static verifyDescription(description) {
+        const colorCount = description.colors.length;
+        function verifyOneDirection(numberOfCrossItems, requirementsForTable) {
+            requirementsForTable.forEach(requirementsForRowOrColumn => {
+                if (colorCount != requirementsForRowOrColumn.length) {
+                    throw new Error("wtf");
+                }
+                const requiredCellCount = sum(requirementsForRowOrColumn.map(requirementsForColor => requirementsForColor.count));
+                if (numberOfCrossItems != requiredCellCount) {
+                    throw new Error("wtf");
+                }
+            });
+        }
+        verifyOneDirection(description.columns.length, description.rows);
+        verifyOneDirection(description.rows.length, description.columns);
+        description.columns.length;
+    }
     constructor(description) {
         this.description = description;
+        Puzzle.verifyDescription(description);
         const colorCount = description.colors.length;
         const cellsRowColumn = [];
         description.rows.forEach((rowRequirements) => {
@@ -145,7 +163,6 @@ class Puzzle {
         return this.rows.map((row) => row.cells.map((cellColor) => cellColor.colors.map((color) => this.description.colors[color])));
     }
     checkIntersections() {
-        return;
         function allowed(allRequirements) {
             const result = new Set();
             allRequirements.forEach((colorRequirements, color) => {
@@ -341,7 +358,7 @@ function showPuzzle(destination, source) {
         cell.style.cursor = (columnIndex % 2) ? "cell" : "crosshair";
     });
     const forDisplay = source.forDisplay();
-    for (const [requirements, rowSource, rowIndex] of zip(source.description.columns, forDisplay, count())) {
+    for (const [requirements, rowSource, rowIndex] of zip(source.description.rows, forDisplay, count())) {
         const row = destination.insertRow();
         const headerCell = row.insertCell();
         const headerCellWrapper = document.createElement("div");
