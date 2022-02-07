@@ -5,13 +5,28 @@
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-    <a href="https://github.com/TradeIdeasPhilip/hungry-cat-nonogram-solver">More info.</a>
-    <hr>
+    <p>
+      <a href="https://github.com/TradeIdeasPhilip/hungry-cat-nonogram-solver"
+        >More info.</a
+      >
+    </p>
+    <p>
+      Quick start:&nbsp; Click the "Load button" to load a sample.&nbsp; Click
+      on a row or column header to tell the software to try to solve that row or
+      column.&nbsp; Repeat as required.
+    </p>
+    <p>
+      There are still some bugs.&nbsp; Open the JavaScript console to see more
+      details.&nbsp; Depending on the order of your clicks, you might or might
+      not be finish without hitting a bug.&nbsp; Consider it a game! 😁 See if
+      you can work around the bugs.
+    </p>
+    <hr />
     <textarea id="requirements">
       {"colors": ["orange", "red"], "rows" : [[{ "count": 0}, {"count": 2, "allInARow":true }], [{"count":1},{"count":1}]], "columns":[[{ "count": 0}, {"count": 2, "allInARow":true }]]}
     </textarea>
     <br />
-    <button id="load">Load</button>
+    <button id="load">Load from JSON</button>
     <hr />
     <div>Colors (one per line):</div>
     <div style="display: flex">
@@ -69,7 +84,10 @@ white
       >
     </div>
     <br />
-    <div><button id="load3Parts">Load</button></div>
+    <div>
+      <button id="load3Parts">Load</button> from these 3 fields.&nbsp; And show
+      the JSON form.
+    </div>
     <hr />
     <table id="output" border="3"></table>
   </body>

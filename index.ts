@@ -806,7 +806,11 @@ class ProposedRowOrColumn {
           ) {
             // They are all in a row and they should not be.
             // Until all cells of this color have been layed out, we can't be sure of this.
+
+            // TODO if I disable the following line I can't complete the sample, but I completely avoid
+            // any errors.  This is a good place to start looking for the bug that I sometimes hit.
             valid = false;
+            //console.log("Ignoring colors that are in a row but should not be.")
           }
         }
       }
