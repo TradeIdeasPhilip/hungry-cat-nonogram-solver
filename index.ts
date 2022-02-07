@@ -381,15 +381,19 @@ class Puzzle {
       if (index == sortedRequirements.length - 1) {
         toInvestigate.forEach((startFrom) => {
           const toAdd = base.cells.flatMap((_, index) => {
-            if (startFrom.isPossible(index, color)) {
+            if (startFrom.isKnown(index)) {
+              return [];
+            } else if (startFrom.isPossible(index, color)) {
               return [[index, color] as const];
             } else {
               return [];
             }
           });
-          const newProposal = new ProposedRowOrColumn(startFrom, toAdd);
-          if (newProposal.valid) {
-            possibilities.push(newProposal);
+          if (toAdd.length == colorsRemainingInInitial[color]) {
+            const newProposal = new ProposedRowOrColumn(startFrom, toAdd);
+            if (newProposal.valid) {
+              possibilities.push(newProposal);
+            }  
           }
         });
       } else if (requirements.allInARow) {
@@ -413,17 +417,27 @@ class Puzzle {
               // The color has already been chosen.  There is no reason to look at this.
               return [];
             } else if (
-              beforeThisColor
-                .colors(index)
-                .every((possibleMatch) => possibleMatch != color)
+              beforeThisColor.isPossible(index, color)
             ) {
+              // Worth a try!
+              return [index];
+            } else {
               // The color we are working on will not fit at this index.
               // There is no reason to look at this index again.
               return [];
-            } else {
-              return [index];
             }
           });
+          /**
+           * This will recursively look for ways that we can add the given color to the table.
+           * This will try all combinations.
+           * All legal possibilities will be added to `possibilities`.
+           * @param cellsAvailableCount How many free cells are there where we might add the current color.
+           * This will decrease by one for each recursive call to find().
+           * We typically examine available[cellsAvailableCount-1] in each step.
+           * @param howManyMoreToAdd We need to add this many of the given color to match the requirements.
+           * @param toAdd This are the indices of the cells that we already plan to set to the current color.
+           * Each recursive call to find() might or might not add one to this number.
+           */
           function find(
             cellsAvailableCount: number,
             howManyMoreToAdd: number,
@@ -464,7 +478,7 @@ class Puzzle {
               ]);
             }
           }
-          find(0, colorsRemainingInInitial[color], []);
+          find(available.length, colorsRemainingInInitial[color], []);
         });
       }
     });
@@ -759,12 +773,10 @@ class ProposedRowOrColumn {
       // It seems like I should be able to do better because I know what's changing!
       // Worst case, I try some tricks when I can, and I always fall back on this if my tricks are inconclusive.
       for (const [index, color] of add) {
-        const previousColor = known.get(index);
-        if (previousColor === undefined) {
-          known.set(index, color);
-        } else if (previousColor != color) {
+        if (!this.isPossible(index, color)) {
           valid = false;
-          break;
+        } else {
+          known.set(index, color);
         }
       }
       const allRequirements = this.base.requirements;

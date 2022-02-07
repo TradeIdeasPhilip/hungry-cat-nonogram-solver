@@ -233,16 +233,21 @@ class Puzzle {
             if (index == sortedRequirements.length - 1) {
                 toInvestigate.forEach((startFrom) => {
                     const toAdd = base.cells.flatMap((_, index) => {
-                        if (startFrom.isPossible(index, color)) {
+                        if (startFrom.isKnown(index)) {
+                            return [];
+                        }
+                        else if (startFrom.isPossible(index, color)) {
                             return [[index, color]];
                         }
                         else {
                             return [];
                         }
                     });
-                    const newProposal = new ProposedRowOrColumn(startFrom, toAdd);
-                    if (newProposal.valid) {
-                        possibilities.push(newProposal);
+                    if (toAdd.length == colorsRemainingInInitial[color]) {
+                        const newProposal = new ProposedRowOrColumn(startFrom, toAdd);
+                        if (newProposal.valid) {
+                            possibilities.push(newProposal);
+                        }
                     }
                 });
             }
@@ -264,13 +269,11 @@ class Puzzle {
                         if (beforeThisColor.isKnown(index)) {
                             return [];
                         }
-                        else if (beforeThisColor
-                            .colors(index)
-                            .every((possibleMatch) => possibleMatch != color)) {
-                            return [];
+                        else if (beforeThisColor.isPossible(index, color)) {
+                            return [index];
                         }
                         else {
-                            return [index];
+                            return [];
                         }
                     });
                     function find(cellsAvailableCount, howManyMoreToAdd, toAdd) {
@@ -299,7 +302,7 @@ class Puzzle {
                             ]);
                         }
                     }
-                    find(0, colorsRemainingInInitial[color], []);
+                    find(available.length, colorsRemainingInInitial[color], []);
                 });
             }
         });
@@ -502,13 +505,11 @@ class ProposedRowOrColumn {
         let valid = true;
         if (add !== undefined) {
             for (const [index, color] of add) {
-                const previousColor = known.get(index);
-                if (previousColor === undefined) {
-                    known.set(index, color);
-                }
-                else if (previousColor != color) {
+                if (!this.isPossible(index, color)) {
                     valid = false;
-                    break;
+                }
+                else {
+                    known.set(index, color);
                 }
             }
             const allRequirements = this.base.requirements;
