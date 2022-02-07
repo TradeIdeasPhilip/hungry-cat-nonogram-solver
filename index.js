@@ -230,28 +230,7 @@ class Puzzle {
         sortedRequirements.forEach(({ color, requirements }, index) => {
             const toInvestigate = possibilities;
             possibilities = [];
-            if (index == sortedRequirements.length - 1) {
-                toInvestigate.forEach((startFrom) => {
-                    const toAdd = base.cells.flatMap((_, index) => {
-                        if (startFrom.isKnown(index)) {
-                            return [];
-                        }
-                        else if (startFrom.isPossible(index, color)) {
-                            return [[index, color]];
-                        }
-                        else {
-                            return [];
-                        }
-                    });
-                    if (toAdd.length == colorsRemainingInInitial[color]) {
-                        const newProposal = new ProposedRowOrColumn(startFrom, toAdd);
-                        if (newProposal.valid) {
-                            possibilities.push(newProposal);
-                        }
-                    }
-                });
-            }
-            else if (requirements.allInARow) {
+            if (requirements.allInARow) {
                 const lastStart = base.cells.length - requirements.count;
                 for (let start = 0; start <= lastStart; start++) {
                     const toAdd = Array.from(count(start, start + requirements.count), (index) => [index, color]);
