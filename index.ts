@@ -224,20 +224,27 @@ class Puzzle {
    */
   static verifyDescription(description: PuzzleDescription) {
     const colorCount = description.colors.length;
-    function verifyOneDirection(numberOfCrossItems : number, requirementsForTable : readonly (readonly ColorRequirements[])[]) {
-      requirementsForTable.forEach(requirementsForRowOrColumn => {
+    function verifyOneDirection(
+      numberOfCrossItems: number,
+      requirementsForTable: readonly (readonly ColorRequirements[])[]
+    ) {
+      requirementsForTable.forEach((requirementsForRowOrColumn) => {
         if (colorCount != requirementsForRowOrColumn.length) {
           throw new Error("wtf");
         }
-        const requiredCellCount = sum(requirementsForRowOrColumn.map(requirementsForColor => requirementsForColor.count));
+        const requiredCellCount = sum(
+          requirementsForRowOrColumn.map(
+            (requirementsForColor) => requirementsForColor.count
+          )
+        );
         if (numberOfCrossItems != requiredCellCount) {
           throw new Error("wtf");
         }
       });
     }
     verifyOneDirection(description.columns.length, description.rows);
-    verifyOneDirection(description.rows.length, description.columns);    
-    description.columns.length
+    verifyOneDirection(description.rows.length, description.columns);
+    description.columns.length;
   }
   constructor(public readonly description: PuzzleDescription) {
     Puzzle.verifyDescription(description);
@@ -396,9 +403,7 @@ class Puzzle {
             if (beforeThisColor.isKnown(index)) {
               // The color has already been chosen.  There is no reason to look at this.
               return [];
-            } else if (
-              beforeThisColor.isPossible(index, color)
-            ) {
+            } else if (beforeThisColor.isPossible(index, color)) {
               // Worth a try!
               return [index];
             } else {
@@ -482,30 +487,29 @@ class Puzzle {
     base.cells.forEach((cell, index) => {
       if (!cell.known) {
         const notFoundYet = new Set(count(0, base.requirements.length));
-        possibilities.forEach(possibility => {
+        possibilities.forEach((possibility) => {
           const colors = possibility.colors(index);
-          colors.forEach(color => {
+          colors.forEach((color) => {
             notFoundYet.delete(color);
           });
         });
-        notFoundYet.forEach(color => {
+        notFoundYet.forEach((color) => {
           cell.eliminate(color);
         });
       }
     });
-
   }
   private examineRowOrColumn(toExamine: RowOrColumn) {
     // TODO restore The call to examineCrosses().
     // I temporarily disable this to test examineRowOrColumnBody().
     // Both routines currently appear to be buggy.
-    //this.examineCrosses(toExamine); 
+    //this.examineCrosses(toExamine);
     this.examineRowOrColumnBody(toExamine);
   }
-  public examineRow(index : number) {
+  public examineRow(index: number) {
     this.examineRowOrColumn(this.rows[index]);
   }
-  public examineColumn(index : number) {
+  public examineColumn(index: number) {
     this.examineRowOrColumn(this.columns[index]);
   }
 }
@@ -546,7 +550,7 @@ function showPuzzle(destination: HTMLTableElement, source: Puzzle) {
       source.examineColumn(columnIndex);
       showPuzzle(destination, source);
     });
-    cell.style.cursor = (columnIndex%2)?"cell":"crosshair";
+    cell.style.cursor = columnIndex % 2 ? "cell" : "crosshair";
   });
   const forDisplay = source.forDisplay();
   for (const [requirements, rowSource, rowIndex] of zip(
@@ -564,7 +568,7 @@ function showPuzzle(destination: HTMLTableElement, source: Puzzle) {
       source.examineRow(rowIndex);
       showPuzzle(destination, source);
     });
-    headerCellWrapper.style.cursor = (rowIndex%2)?"cell":"crosshair";
+    headerCellWrapper.style.cursor = rowIndex % 2 ? "cell" : "crosshair";
     rowSource.forEach((cellStyle) => {
       const cell = row.insertCell();
       cell.style.width = "1em";
@@ -782,6 +786,8 @@ class ProposedRowOrColumn {
           }
         } else {
           let stillAllowed = requirements.count;
+          let firstIndex: number | undefined = undefined;
+          let lastIndex: number | undefined = undefined;
           for (const [index, colorOfCell] of known) {
             if (colorOfCell === colorToCheck) {
               stillAllowed--;
@@ -789,7 +795,18 @@ class ProposedRowOrColumn {
                 valid = false;
                 break;
               }
+              firstIndex ??= index;
+              lastIndex = index;
             }
+          }
+          if (
+            stillAllowed == 0 &&
+            requirements.count > 1 &&
+            lastIndex! - firstIndex! + 1 == requirements.count
+          ) {
+            // They are all in a row and they should not be.
+            // Until all cells of this color have been layed out, we can't be sure of this.
+            valid = false;
           }
         }
       }

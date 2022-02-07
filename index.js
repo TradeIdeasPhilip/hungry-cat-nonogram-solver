@@ -103,11 +103,11 @@ class Puzzle {
     static verifyDescription(description) {
         const colorCount = description.colors.length;
         function verifyOneDirection(numberOfCrossItems, requirementsForTable) {
-            requirementsForTable.forEach(requirementsForRowOrColumn => {
+            requirementsForTable.forEach((requirementsForRowOrColumn) => {
                 if (colorCount != requirementsForRowOrColumn.length) {
                     throw new Error("wtf");
                 }
-                const requiredCellCount = sum(requirementsForRowOrColumn.map(requirementsForColor => requirementsForColor.count));
+                const requiredCellCount = sum(requirementsForRowOrColumn.map((requirementsForColor) => requirementsForColor.count));
                 if (numberOfCrossItems != requiredCellCount) {
                     throw new Error("wtf");
                 }
@@ -291,13 +291,13 @@ class Puzzle {
         base.cells.forEach((cell, index) => {
             if (!cell.known) {
                 const notFoundYet = new Set(count(0, base.requirements.length));
-                possibilities.forEach(possibility => {
+                possibilities.forEach((possibility) => {
                     const colors = possibility.colors(index);
-                    colors.forEach(color => {
+                    colors.forEach((color) => {
                         notFoundYet.delete(color);
                     });
                 });
-                notFoundYet.forEach(color => {
+                notFoundYet.forEach((color) => {
                     cell.eliminate(color);
                 });
             }
@@ -343,7 +343,7 @@ function showPuzzle(destination, source) {
             source.examineColumn(columnIndex);
             showPuzzle(destination, source);
         });
-        cell.style.cursor = (columnIndex % 2) ? "cell" : "crosshair";
+        cell.style.cursor = columnIndex % 2 ? "cell" : "crosshair";
     });
     const forDisplay = source.forDisplay();
     for (const [requirements, rowSource, rowIndex] of zip(source.description.rows, forDisplay, count())) {
@@ -357,7 +357,7 @@ function showPuzzle(destination, source) {
             source.examineRow(rowIndex);
             showPuzzle(destination, source);
         });
-        headerCellWrapper.style.cursor = (rowIndex % 2) ? "cell" : "crosshair";
+        headerCellWrapper.style.cursor = rowIndex % 2 ? "cell" : "crosshair";
         rowSource.forEach((cellStyle) => {
             const cell = row.insertCell();
             cell.style.width = "1em";
@@ -510,6 +510,8 @@ class ProposedRowOrColumn {
                 }
                 else {
                     let stillAllowed = requirements.count;
+                    let firstIndex = undefined;
+                    let lastIndex = undefined;
                     for (const [index, colorOfCell] of known) {
                         if (colorOfCell === colorToCheck) {
                             stillAllowed--;
@@ -517,7 +519,14 @@ class ProposedRowOrColumn {
                                 valid = false;
                                 break;
                             }
+                            firstIndex ??= index;
+                            lastIndex = index;
                         }
+                    }
+                    if (stillAllowed == 0 &&
+                        requirements.count > 1 &&
+                        lastIndex - firstIndex + 1 == requirements.count) {
+                        valid = false;
                     }
                 }
             }
