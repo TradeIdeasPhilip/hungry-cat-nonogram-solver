@@ -1,5 +1,137 @@
 import { getById } from "./lib/client-misc.js";
 import { count, sum, zip } from "./lib/misc.js";
+const puzzleList = [
+    {
+        notes: "Medium 182",
+        colors: ["#fff44f", "#5C4033", "#B87333", "white"],
+        columns: [
+            [
+                { count: 10, allInARow: true },
+                { count: 0 },
+                { count: 0 },
+                { count: 0 },
+            ],
+            [
+                { count: 4, allInARow: false },
+                { count: 0 },
+                { count: 2, allInARow: true },
+                { count: 4, allInARow: true },
+            ],
+            [
+                { count: 1 },
+                { count: 3, allInARow: true },
+                { count: 3, allInARow: false },
+                { count: 3, allInARow: false },
+            ],
+            [
+                { count: 1 },
+                { count: 1 },
+                { count: 3, allInARow: false },
+                { count: 5, allInARow: false },
+            ],
+            [
+                { count: 1 },
+                { count: 1 },
+                { count: 4, allInARow: false },
+                { count: 4, allInARow: false },
+            ],
+            [
+                { count: 1 },
+                { count: 1 },
+                { count: 3, allInARow: false },
+                { count: 5, allInARow: false },
+            ],
+            [
+                { count: 1 },
+                { count: 2, allInARow: false },
+                { count: 4, allInARow: false },
+                { count: 3, allInARow: false },
+            ],
+            [
+                { count: 4, allInARow: false },
+                { count: 0 },
+                { count: 1 },
+                { count: 5, allInARow: true },
+            ],
+            [
+                { count: 7, allInARow: false },
+                { count: 0 },
+                { count: 1 },
+                { count: 2, allInARow: false },
+            ],
+            [
+                { count: 7, allInARow: false },
+                { count: 0 },
+                { count: 0 },
+                { count: 3, allInARow: true },
+            ],
+        ],
+        rows: [
+            [
+                { count: 10, allInARow: true },
+                { count: 0 },
+                { count: 0 },
+                { count: 0 },
+            ],
+            [
+                { count: 5, allInARow: false },
+                { count: 0 },
+                { count: 0 },
+                { count: 5, allInARow: true },
+            ],
+            [
+                { count: 3, allInARow: false },
+                { count: 5, allInARow: true },
+                { count: 0 },
+                { count: 2, allInARow: false },
+            ],
+            [
+                { count: 1 },
+                { count: 1 },
+                { count: 4, allInARow: true },
+                { count: 4, allInARow: false },
+            ],
+            [
+                { count: 2, allInARow: false },
+                { count: 1 },
+                { count: 4, allInARow: true },
+                { count: 3, allInARow: false },
+            ],
+            [
+                { count: 2, allInARow: false },
+                { count: 0 },
+                { count: 0 },
+                { count: 8, allInARow: false },
+            ],
+            [
+                { count: 3, allInARow: false },
+                { count: 1 },
+                { count: 1 },
+                { count: 5, allInARow: false },
+            ],
+            [
+                { count: 5, allInARow: false },
+                { count: 0 },
+                { count: 1 },
+                { count: 4, allInARow: false },
+            ],
+            [
+                { count: 2, allInARow: false },
+                { count: 0 },
+                { count: 5, allInARow: false },
+                { count: 3, allInARow: true },
+            ],
+            [
+                { count: 4, allInARow: false },
+                { count: 0 },
+                { count: 6, allInARow: true },
+                { count: 0 },
+            ],
+        ],
+    },
+];
+("medium 184");
+const testTest = puzzleList[0];
 class CellColor {
     possible = new Set();
     constructor(colorCount) {
@@ -102,19 +234,19 @@ class Puzzle {
     }
     static verifyDescription(description) {
         const colorCount = description.colors.length;
-        function verifyOneDirection(numberOfCrossItems, requirementsForTable) {
-            requirementsForTable.forEach((requirementsForRowOrColumn) => {
+        function verifyOneDirection(numberOfCrossItems, requirementsForTable, description) {
+            requirementsForTable.forEach((requirementsForRowOrColumn, index) => {
                 if (colorCount != requirementsForRowOrColumn.length) {
-                    throw new Error("wtf");
+                    throw new Error(`${description} ${index} has ${requirementsForRowOrColumn.length} colors, but the puzzle has ${colorCount} colors.`);
                 }
                 const requiredCellCount = sum(requirementsForRowOrColumn.map((requirementsForColor) => requirementsForColor.count));
                 if (numberOfCrossItems != requiredCellCount) {
-                    throw new Error("wtf");
+                    throw new Error(`${description} ${index} has ${requiredCellCount} cells (when you add up the individual color requirements), but should have ${numberOfCrossItems} cells.`);
                 }
             });
         }
-        verifyOneDirection(description.columns.length, description.rows);
-        verifyOneDirection(description.rows.length, description.columns);
+        verifyOneDirection(description.columns.length, description.rows, "Row");
+        verifyOneDirection(description.rows.length, description.columns, "Column");
         description.columns.length;
     }
     constructor(description) {
@@ -380,6 +512,20 @@ const loadButton = getById("load", HTMLButtonElement);
 const outputTable = getById("output", HTMLTableElement);
 loadButton.addEventListener("click", () => {
     const description = decodePuzzleDescription(requirementsTextArea.value);
+    colorsTextArea.value = description.colors.join("\r\n");
+    colorsTextArea.rows = description.colors.length;
+    updateColorSamples();
+    for (const [destination, source] of [
+        [columnsTextArea, description.columns],
+        [rowsTextArea, description.rows],
+    ]) {
+        destination.value = source
+            .map((row) => row
+            .map((requirements) => requirements.count + (requirements.allInARow ? "*" : ""))
+            .join(" "))
+            .join("\r\n");
+        destination.rows = source.length;
+    }
     const puzzle = new Puzzle(description);
     puzzle.checkIntersections();
     showPuzzle(outputTable, puzzle);
@@ -421,7 +567,7 @@ load3PartsButton.addEventListener("click", () => {
             const items = line.split(" ").filter((item) => item != "");
             if (items.length > 0) {
                 if (items.length != colors.length) {
-                    throw new Error(`Expecting ${colors.length} requirements, found ${items.length}, "${line}"`);
+                    throw new Error(`Expecting ${colors.length} requirements, found ${items.length}: "${line}"`);
                 }
                 const thisRowRowColumn = [];
                 items.forEach((item) => {

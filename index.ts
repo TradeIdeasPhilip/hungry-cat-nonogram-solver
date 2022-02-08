@@ -10,8 +10,151 @@ JSON.stringify(hcn.lastShown.rows.map(row => row.cells.map(cell => cell.color)))
 JSON.stringify(hcn.lastShown.rows.map((row, rowIndex) => row.cells.map((cell, columnIndex) => {return {row: rowIndex, column:columnIndex, color: cell.color}})))
 '[[{"row":0,"column":0,"color":0},{"row":0,"column":1,"color":0},{"row":0,"column":2,"color":0},{"row":0,"column":3,"color":0},{"row":0,"column":4,"color":0},{"row":0,"column":5,"color":0},{"row":0,"column":6,"color":0},{"row":0,"column":7,"color":0},{"row":0,"column":8,"color":0},{"row":0,"column":9,"color":0}],[{"row":1,"column":0,"color":0},{"row":1,"column":1,"color":0},{"row":1,"column":2,"color":3},{"row":1,"column":3,"color":3},{"row":1,"column":4,"color":3},{"row":1,"column":5,"color":3},{"row":1,"column":6,"color":3},{"row":1,"column":7,"color":0},{"row":1,"column":8,"color":0},{"row":1,"column":9,"color":0}],[{"row":2,"column":0,"color":0},{"row":2,"column":1,"color":0},{"row":2,"column":2,"color":1},{"row":2,"column":3,"color":1},{"row":2,"column":4,"color":1},{"row":2,"column":5,"color":1},{"row":2,"column":6,"color":1},{"row":2,"column":7,"color":3},{"row":2,"column":8,"color":0},{"row":2,"column":9,"color":3}],[{"row":3,"column":0,"color":0},{"row":3,"column":1,"color":3},{"row":3,"column":2,"color":1},{"row":3,"column":3,"color":2},{"row":3,"column":4,"color":2},{"row":3,"column":5,"color":2},{"row":3,"column":6,"color":2},{"row":3,"column":7,"color":3},{"row":3,"column":8,"color":3},{"row":3,"column":9,"color":3}],[{"row":4,"column":0,"color":0},{"row":4,"column":1,"color":3},{"row":4,"column":2,"color":1},{"row":4,"column":3,"color":2},{"row":4,"column":4,"color":2},{"row":4,"column":5,"color":2},{"row":4,"column":6,"color":2},{"row":4,"column":7,"color":3},{"row":4,"column":8,"color":0},{"row":4,"column":9,"color":3}],[{"row":5,"column":0,"color":0},{"row":5,"column":1,"color":3},{"row":5,"column":2,"color":3},{"row":5,"column":3,"color":3},{"row":5,"column":4,"color":3},{"row":5,"column":5,"color":3},{"row":5,"column":6,"color":3},{"row":5,"column":7,"color":3},{"row":5,"column":8,"color":3},{"row":5,"column":9,"color":0}],[{"row":6,"column":0,"color":0},{"row":6,"column":1,"color":3},{"row":6,"column":2,"color":2},{"row":6,"column":3,"color":3},{"row":6,"column":4,"color":3},{"row":6,"column":5,"color":3},{"row":6,"column":6,"color":1},{"row":6,"column":7,"color":3},{"row":6,"column":8,"color":0},{"row":6,"column":9,"color":0}],[{"row":7,"column":0,"color":0},{"row":7,"column":1,"color":0},{"row":7,"column":2,"color":3},{"row":7,"column":3,"color":3},{"row":7,"column":4,"color":2},{"row":7,"column":5,"color":3},{"row":7,"column":6,"color":3},{"row":7,"column":7,"color":0},{"row":7,"column":8,"color":0},{"row":7,"column":9,"color":0}],[{"row":8,"column":0,"color":0},{"row":8,"column":1,"color":2},{"row":8,"column":2,"color":2},{"row":8,"column":3,"color":3},{"row":8,"column":4,"color":3},{"row":8,"column":5,"color":3},{"row":8,"column":6,"color":2},{"row":8,"column":7,"color":2},{"row":8,"column":8,"color":2},{"row":8,"column":9,"color":0}],[{"row":9,"column":0,"color":0},{"row":9,"column":1,"color":2},{"row":9,"column":2,"color":2},{"row":9,"column":3,"color":2},{"row":9,"column":4,"color":2},{"row":9,"column":5,"color":2},{"row":9,"column":6,"color":2},{"row":9,"column":7,"color":0},{"row":9,"column":8,"color":0},{"row":9,"column":9,"color":0}]]'
 
-This is what the sample board should look like when it is done.
+This is what the "Medium 182" should look like when it is done.
 */
+
+const puzzleList = [
+  {
+    notes: "Medium 182",
+    colors: ["#fff44f", "#5C4033", "#B87333", "white"],
+    columns: [
+      [
+        { count: 10, allInARow: true },
+        { count: 0 },
+        { count: 0 },
+        { count: 0 },
+      ],
+      [
+        { count: 4, allInARow: false },
+        { count: 0 },
+        { count: 2, allInARow: true },
+        { count: 4, allInARow: true },
+      ],
+      [
+        { count: 1 },
+        { count: 3, allInARow: true },
+        { count: 3, allInARow: false },
+        { count: 3, allInARow: false },
+      ],
+      [
+        { count: 1 },
+        { count: 1 },
+        { count: 3, allInARow: false },
+        { count: 5, allInARow: false },
+      ],
+      [
+        { count: 1 },
+        { count: 1 },
+        { count: 4, allInARow: false },
+        { count: 4, allInARow: false },
+      ],
+      [
+        { count: 1 },
+        { count: 1 },
+        { count: 3, allInARow: false },
+        { count: 5, allInARow: false },
+      ],
+      [
+        { count: 1 },
+        { count: 2, allInARow: false },
+        { count: 4, allInARow: false },
+        { count: 3, allInARow: false },
+      ],
+      [
+        { count: 4, allInARow: false },
+        { count: 0 },
+        { count: 1 },
+        { count: 5, allInARow: true },
+      ],
+      [
+        { count: 7, allInARow: false },
+        { count: 0 },
+        { count: 1 },
+        { count: 2, allInARow: false },
+      ],
+      [
+        { count: 7, allInARow: false },
+        { count: 0 },
+        { count: 0 },
+        { count: 3, allInARow: true },
+      ],
+    ],
+    rows: [
+      [
+        { count: 10, allInARow: true },
+        { count: 0 },
+        { count: 0 },
+        { count: 0 },
+      ],
+      [
+        { count: 5, allInARow: false },
+        { count: 0 },
+        { count: 0 },
+        { count: 5, allInARow: true },
+      ],
+      [
+        { count: 3, allInARow: false },
+        { count: 5, allInARow: true },
+        { count: 0 },
+        { count: 2, allInARow: false },
+      ],
+      [
+        { count: 1 },
+        { count: 1 },
+        { count: 4, allInARow: true },
+        { count: 4, allInARow: false },
+      ],
+      [
+        { count: 2, allInARow: false },
+        { count: 1 },
+        { count: 4, allInARow: true },
+        { count: 3, allInARow: false },
+      ],
+      [
+        { count: 2, allInARow: false },
+        { count: 0 },
+        { count: 0 },
+        { count: 8, allInARow: false },
+      ],
+      [
+        { count: 3, allInARow: false },
+        { count: 1 },
+        { count: 1 },
+        { count: 5, allInARow: false },
+      ],
+      [
+        { count: 5, allInARow: false },
+        { count: 0 },
+        { count: 1 },
+        { count: 4, allInARow: false },
+      ],
+      [
+        { count: 2, allInARow: false },
+        { count: 0 },
+        { count: 5, allInARow: false },
+        { count: 3, allInARow: true },
+      ],
+      [
+        { count: 4, allInARow: false },
+        { count: 0 },
+        { count: 6, allInARow: true },
+        { count: 0 },
+      ],
+    ],
+  },
+];
+("medium 184");
+//hint:  "Another bird"
+//{"colors":["#fff44f","black","orange","darkgreen"],"columns":[[{"count":15,"allInARow":true},{"count":0},{"count":0},{"count":0}],[{"count":12,"allInARow":false},{"count":3,"allInARow":false},{"count":0},{"count":0}],[{"count":9,"allInARow":false},{"count":3,"allInARow":false},{"count":3,"allInARow":false},{"count":0}],[{"count":2,"allInARow":true},{"count":3,"allInARow":true},{"count":6,"allInARow":false},{"count":4,"allInARow":true}],[{"count":2,"allInARow":false},{"count":3,"allInARow":false},{"count":4,"allInARow":false},{"count":6,"allInARow":true}],[{"count":2,"allInARow":true},{"count":3,"allInARow":false},{"count":1},{"count":9,"allInARow":false}],[{"count":3,"allInARow":false},{"count":1},{"count":0},{"count":11,"allInARow":true}],[{"count":5,"allInARow":false},{"count":0},{"count":0},{"count":10,"allInARow":true}],[{"count":5,"allInARow":true},{"count":0},{"count":0},{"count":10,"allInARow":true}],[{"count":13,"allInARow":false},{"count":2,"allInARow":true},{"count":0},{"count":0}]],"rows":[[{"count":7,"allInARow":false},{"count":0},{"count":2,"allInARow":true},{"count":1}],[{"count":5,"allInARow":false},{"count":2,"allInARow":true},{"count":2,"allInARow":true},{"count":1}],[{"count":5,"allInARow":false},{"count":3,"allInARow":false},{"count":1},{"count":1}],[{"count":5,"allInARow":false},{"count":0},{"count":3,"allInARow":true},{"count":2,"allInARow":true}],[{"count":5,"allInARow":false},{"count":0},{"count":2,"allInARow":true},{"count":3,"allInARow":true}],[{"count":4,"allInARow":false},{"count":0},{"count":0},{"count":6,"allInARow":true}],[{"count":4,"allInARow":false},{"count":0},{"count":0},{"count":6,"allInARow":true}],[{"count":4,"allInARow":false},{"count":0},{"count":0},{"count":6,"allInARow":true}],[{"count":4,"allInARow":false},{"count":0},{"count":0},{"count":6,"allInARow":true}],[{"count":4,"allInARow":true},{"count":1},{"count":0},{"count":5,"allInARow":true}],[{"count":4,"allInARow":true},{"count":1},{"count":0},{"count":5,"allInARow":true}],[{"count":3,"allInARow":false},{"count":0},{"count":3,"allInARow":true},{"count":4,"allInARow":true}],[{"count":3,"allInARow":false},{"count":4,"allInARow":true},{"count":1},{"count":2,"allInARow":true}],[{"count":5,"allInARow":false},{"count":4,"allInARow":true},{"count":0},{"count":1}],[{"count":6,"allInARow":false},{"count":3,"allInARow":true},{"count":0},{"count":1}]]}
+const testTest: PuzzleDescription = puzzleList[0];
+
+//191 medium
+// {"colors":["#76A2C4","#800000","#B87333","black"],"columns":[[{"count":9,"allInARow":false},{"count":3,"allInARow":true},{"count":0},{"count":3,"allInARow":true}],[{"count":6,"allInARow":false},{"count":7,"allInARow":false},{"count":0},{"count":2,"allInARow":false}],[{"count":4,"allInARow":false},{"count":5,"allInARow":false},{"count":3,"allInARow":true},{"count":3,"allInARow":false}],[{"count":2,"allInARow":false},{"count":4,"allInARow":false},{"count":4,"allInARow":true},{"count":5,"allInARow":false}],[{"count":6,"allInARow":false},{"count":3,"allInARow":false},{"count":5,"allInARow":false},{"count":1}],[{"count":6,"allInARow":false},{"count":3,"allInARow":false},{"count":5,"allInARow":false},{"count":1}],[{"count":6,"allInARow":true},{"count":4,"allInARow":false},{"count":2,"allInARow":false},{"count":3,"allInARow":false}],[{"count":9,"allInARow":false},{"count":4,"allInARow":true},{"count":2,"allInARow":true},{"count":0}],[{"count":11,"allInARow":false},{"count":1},{"count":3,"allInARow":true},{"count":0}],[{"count":12,"allInARow":false},{"count":0},{"count":3,"allInARow":true},{"count":0}]],"rows":[[{"count":10,"allInARow":true},{"count":0},{"count":0},{"count":0}],[{"count":7,"allInARow":false},{"count":0},{"count":0},{"count":3,"allInARow":true}],[{"count":6,"allInARow":true},{"count":2,"allInARow":true},{"count":0},{"count":2,"allInARow":false}],[{"count":5,"allInARow":true},{"count":4,"allInARow":true},{"count":0},{"count":1}],[{"count":7,"allInARow":true},{"count":0},{"count":0},{"count":3,"allInARow":true}],[{"count":7,"allInARow":false},{"count":0},{"count":3,"allInARow":true},{"count":0}],[{"count":2,"allInARow":true},{"count":2,"allInARow":true},{"count":6,"allInARow":true},{"count":0}],[{"count":2,"allInARow":true},{"count":4,"allInARow":false},{"count":3,"allInARow":false},{"count":1}],[{"count":1},{"count":4,"allInARow":false},{"count":5,"allInARow":false},{"count":0}],[{"count":2,"allInARow":false},{"count":3,"allInARow":false},{"count":3,"allInARow":false},{"count":2,"allInARow":false}],[{"count":1},{"count":4,"allInARow":false},{"count":5,"allInARow":false},{"count":0}],[{"count":2,"allInARow":true},{"count":7,"allInARow":true},{"count":1},{"count":0}],[{"count":5,"allInARow":false},{"count":4,"allInARow":true},{"count":1},{"count":0}],[{"count":8,"allInARow":false},{"count":0},{"count":0},{"count":2,"allInARow":false}],[{"count":6,"allInARow":false},{"count":0},{"count":0},{"count":4,"allInARow":false}]]}
+// Hint:  "The last one"
+
+//196 medium
+// {"colors":["black","white","green","yellow"],"columns":[[{"count":0},{"count":10,"allInARow":false},{"count":3,"allInARow":true},{"count":2,"allInARow":true}],[{"count":0},{"count":11,"allInARow":false},{"count":3,"allInARow":true},{"count":1}],[{"count":0},{"count":11,"allInARow":false},{"count":2,"allInARow":true},{"count":2,"allInARow":true}],[{"count":0},{"count":8,"allInARow":true},{"count":7,"allInARow":true},{"count":0}],[{"count":1},{"count":6,"allInARow":false},{"count":7,"allInARow":false},{"count":1}],[{"count":3,"allInARow":false},{"count":3,"allInARow":false},{"count":7,"allInARow":false},{"count":2,"allInARow":false}],[{"count":0},{"count":0},{"count":13,"allInARow":false},{"count":2,"allInARow":true}],[{"count":1},{"count":2,"allInARow":false},{"count":7,"allInARow":false},{"count":5,"allInARow":true}],[{"count":2,"allInARow":true},{"count":10,"allInARow":false},{"count":3,"allInARow":false},{"count":0}],[{"count":0},{"count":11,"allInARow":false},{"count":4,"allInARow":false},{"count":0}]],"rows":[[{"count":0},{"count":7,"allInARow":false},{"count":3,"allInARow":true},{"count":0}],[{"count":1},{"count":4,"allInARow":true},{"count":4,"allInARow":false},{"count":1}],[{"count":0},{"count":4,"allInARow":true},{"count":4,"allInARow":false},{"count":2,"allInARow":true}],[{"count":0},{"count":6,"allInARow":false},{"count":4,"allInARow":true},{"count":0}],[{"count":0},{"count":8,"allInARow":false},{"count":2,"allInARow":true},{"count":0}],[{"count":0},{"count":7,"allInARow":false},{"count":2,"allInARow":false},{"count":1}],[{"count":0},{"count":7,"allInARow":false},{"count":2,"allInARow":false},{"count":1}],[{"count":0},{"count":5,"allInARow":false},{"count":4,"allInARow":false},{"count":1}],[{"count":0},{"count":2,"allInARow":true},{"count":6,"allInARow":true},{"count":2,"allInARow":false}],[{"count":0},{"count":0},{"count":8,"allInARow":false},{"count":2,"allInARow":false}],[{"count":0},{"count":2,"allInARow":false},{"count":6,"allInARow":false},{"count":2,"allInARow":true}],[{"count":0},{"count":4,"allInARow":false},{"count":3,"allInARow":false},{"count":3,"allInARow":false}],[{"count":0},{"count":8,"allInARow":false},{"count":2,"allInARow":false},{"count":0}],[{"count":4,"allInARow":false},{"count":4,"allInARow":false},{"count":2,"allInARow":false},{"count":0}],[{"count":2,"allInARow":false},{"count":4,"allInARow":false},{"count":4,"allInARow":false},{"count":0}]]}
+// Hint: "Chicken ancestor"
 
 /**
  * This is what you might see at the top of a column or on the left of a row.
@@ -231,18 +374,25 @@ class Puzzle {
    * @param description The puzzle description to test.
    * @throws If there is a problem, it is reported as an error.
    * Effectively this method _asserts_ that the input is good.
-   * I've made no attempt at human readable error messages.
-   * This just points you to the right place in the debugger.
    */
   static verifyDescription(description: PuzzleDescription) {
     const colorCount = description.colors.length;
+    /**
+     * 
+     * @param numberOfCrossItems If we are verifying rows, this is the number of columns.
+     * @param requirementsForTable The requirements from all rows or all columns.
+     * @param description Used only for error messages.
+     */
     function verifyOneDirection(
       numberOfCrossItems: number,
-      requirementsForTable: readonly (readonly ColorRequirements[])[]
+      requirementsForTable: readonly (readonly ColorRequirements[])[],
+      description: "Row" | "Column"
     ) {
-      requirementsForTable.forEach((requirementsForRowOrColumn) => {
+      requirementsForTable.forEach((requirementsForRowOrColumn, index) => {
         if (colorCount != requirementsForRowOrColumn.length) {
-          throw new Error("wtf");
+          throw new Error(
+            `${description} ${index} has ${requirementsForRowOrColumn.length} colors, but the puzzle has ${colorCount} colors.`
+          );
         }
         const requiredCellCount = sum(
           requirementsForRowOrColumn.map(
@@ -250,12 +400,14 @@ class Puzzle {
           )
         );
         if (numberOfCrossItems != requiredCellCount) {
-          throw new Error("wtf");
+          throw new Error(
+            `${description} ${index} has ${requiredCellCount} cells (when you add up the individual color requirements), but should have ${numberOfCrossItems} cells.`
+          );
         }
       });
     }
-    verifyOneDirection(description.columns.length, description.rows);
-    verifyOneDirection(description.rows.length, description.columns);
+    verifyOneDirection(description.columns.length, description.rows, "Row");
+    verifyOneDirection(description.rows.length, description.columns, "Column");
     description.columns.length;
   }
   constructor(public readonly description: PuzzleDescription) {
@@ -608,6 +760,25 @@ const outputTable = getById("output", HTMLTableElement);
 
 loadButton.addEventListener("click", () => {
   const description = decodePuzzleDescription(requirementsTextArea.value);
+  colorsTextArea.value = description.colors.join("\r\n");
+  colorsTextArea.rows = description.colors.length;
+  updateColorSamples();
+  for (const [destination, source] of [
+    [columnsTextArea, description.columns],
+    [rowsTextArea, description.rows],
+  ] as const) {
+    destination.value = source
+      .map((row) =>
+        row
+          .map(
+            (requirements) =>
+              requirements.count + (requirements.allInARow ? "*" : "")
+          )
+          .join(" ")
+      )
+      .join("\r\n");
+    destination.rows = source.length;
+  }
   const puzzle = new Puzzle(description);
   puzzle.checkIntersections();
   showPuzzle(outputTable, puzzle);
@@ -656,7 +827,7 @@ load3PartsButton.addEventListener("click", () => {
       if (items.length > 0) {
         if (items.length != colors.length) {
           throw new Error(
-            `Expecting ${colors.length} requirements, found ${items.length}, "${line}"`
+            `Expecting ${colors.length} requirements, found ${items.length}: "${line}"`
           );
         }
         const thisRowRowColumn: ColorRequirements[] = [];
