@@ -1,6 +1,20 @@
 import { getById } from "./lib/client-misc.js";
 import { count, sum, zip } from "./lib/misc.js";
 
+/*
+TODO / test data
+
+JSON.stringify(hcn.lastShown.rows.map(row => row.cells.map(cell => cell.color)))
+'[[0,0,0,0,0,0,0,0,0,0],[0,0,3,3,3,3,3,0,0,0],[0,0,1,1,1,1,1,3,0,3],[0,3,1,2,2,2,2,3,3,3],[0,3,1,2,2,2,2,3,0,3],[0,3,3,3,3,3,3,3,3,0],[0,3,2,3,3,3,1,3,0,0],[0,0,3,3,2,3,3,0,0,0],[0,2,2,3,3,3,2,2,2,0],[0,2,2,2,2,2,2,0,0,0]]'
+
+JSON.stringify(hcn.lastShown.rows.map((row, rowIndex) => row.cells.map((cell, columnIndex) => {return {row: rowIndex, column:columnIndex, color: cell.color}})))
+'[[{"row":0,"column":0,"color":0},{"row":0,"column":1,"color":0},{"row":0,"column":2,"color":0},{"row":0,"column":3,"color":0},{"row":0,"column":4,"color":0},{"row":0,"column":5,"color":0},{"row":0,"column":6,"color":0},{"row":0,"column":7,"color":0},{"row":0,"column":8,"color":0},{"row":0,"column":9,"color":0}],[{"row":1,"column":0,"color":0},{"row":1,"column":1,"color":0},{"row":1,"column":2,"color":3},{"row":1,"column":3,"color":3},{"row":1,"column":4,"color":3},{"row":1,"column":5,"color":3},{"row":1,"column":6,"color":3},{"row":1,"column":7,"color":0},{"row":1,"column":8,"color":0},{"row":1,"column":9,"color":0}],[{"row":2,"column":0,"color":0},{"row":2,"column":1,"color":0},{"row":2,"column":2,"color":1},{"row":2,"column":3,"color":1},{"row":2,"column":4,"color":1},{"row":2,"column":5,"color":1},{"row":2,"column":6,"color":1},{"row":2,"column":7,"color":3},{"row":2,"column":8,"color":0},{"row":2,"column":9,"color":3}],[{"row":3,"column":0,"color":0},{"row":3,"column":1,"color":3},{"row":3,"column":2,"color":1},{"row":3,"column":3,"color":2},{"row":3,"column":4,"color":2},{"row":3,"column":5,"color":2},{"row":3,"column":6,"color":2},{"row":3,"column":7,"color":3},{"row":3,"column":8,"color":3},{"row":3,"column":9,"color":3}],[{"row":4,"column":0,"color":0},{"row":4,"column":1,"color":3},{"row":4,"column":2,"color":1},{"row":4,"column":3,"color":2},{"row":4,"column":4,"color":2},{"row":4,"column":5,"color":2},{"row":4,"column":6,"color":2},{"row":4,"column":7,"color":3},{"row":4,"column":8,"color":0},{"row":4,"column":9,"color":3}],[{"row":5,"column":0,"color":0},{"row":5,"column":1,"color":3},{"row":5,"column":2,"color":3},{"row":5,"column":3,"color":3},{"row":5,"column":4,"color":3},{"row":5,"column":5,"color":3},{"row":5,"column":6,"color":3},{"row":5,"column":7,"color":3},{"row":5,"column":8,"color":3},{"row":5,"column":9,"color":0}],[{"row":6,"column":0,"color":0},{"row":6,"column":1,"color":3},{"row":6,"column":2,"color":2},{"row":6,"column":3,"color":3},{"row":6,"column":4,"color":3},{"row":6,"column":5,"color":3},{"row":6,"column":6,"color":1},{"row":6,"column":7,"color":3},{"row":6,"column":8,"color":0},{"row":6,"column":9,"color":0}],[{"row":7,"column":0,"color":0},{"row":7,"column":1,"color":0},{"row":7,"column":2,"color":3},{"row":7,"column":3,"color":3},{"row":7,"column":4,"color":2},{"row":7,"column":5,"color":3},{"row":7,"column":6,"color":3},{"row":7,"column":7,"color":0},{"row":7,"column":8,"color":0},{"row":7,"column":9,"color":0}],[{"row":8,"column":0,"color":0},{"row":8,"column":1,"color":2},{"row":8,"column":2,"color":2},{"row":8,"column":3,"color":3},{"row":8,"column":4,"color":3},{"row":8,"column":5,"color":3},{"row":8,"column":6,"color":2},{"row":8,"column":7,"color":2},{"row":8,"column":8,"color":2},{"row":8,"column":9,"color":0}],[{"row":9,"column":0,"color":0},{"row":9,"column":1,"color":2},{"row":9,"column":2,"color":2},{"row":9,"column":3,"color":2},{"row":9,"column":4,"color":2},{"row":9,"column":5,"color":2},{"row":9,"column":6,"color":2},{"row":9,"column":7,"color":0},{"row":9,"column":8,"color":0},{"row":9,"column":9,"color":0}]]'
+
+This is what the sample board should look like when it is done.  There are still bugs.
+When I click on the row and column headings in different orders, sometimes it works and sometimes I get a "wtf".
+TODO Store these correct answers.  Throw an exception the instant the code tries to eliminate a correct answer.
+*/
+
 /**
  * This is what you might see at the top of a column or on the left of a row.
  * There is one of these for each color.
@@ -281,7 +295,7 @@ class Puzzle {
     description.columns.forEach((requirements, index) => {
       columns.push({
         cells: cellsColumnRow[index],
-        cross: columns,
+        cross: rows,
         index,
         requirements,
       });
@@ -338,6 +352,7 @@ class Puzzle {
             [from.index, proposedColor],
           ]);
           if (!cross.valid) {
+            //console.log({from, cell, index, proposedColor})
             cell.eliminate(proposedColor);
           }
         });
@@ -500,10 +515,7 @@ class Puzzle {
     });
   }
   private examineRowOrColumn(toExamine: RowOrColumn) {
-    // TODO restore The call to examineCrosses().
-    // I temporarily disable this to test examineRowOrColumnBody().
-    // Both routines currently appear to be buggy.
-    //this.examineCrosses(toExamine);
+    this.examineCrosses(toExamine);
     this.examineRowOrColumnBody(toExamine);
   }
   public examineRow(index: number) {

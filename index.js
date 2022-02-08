@@ -153,7 +153,7 @@ class Puzzle {
         description.columns.forEach((requirements, index) => {
             columns.push({
                 cells: cellsColumnRow[index],
-                cross: columns,
+                cross: rows,
                 index,
                 requirements,
             });
@@ -304,6 +304,7 @@ class Puzzle {
         });
     }
     examineRowOrColumn(toExamine) {
+        this.examineCrosses(toExamine);
         this.examineRowOrColumnBody(toExamine);
     }
     examineRow(index) {
