@@ -2,7 +2,7 @@ import { getById } from "./lib/client-misc.js";
 import { count, sum, zip } from "./lib/misc.js";
 
 /*
-TODO / test data
+test data
 
 JSON.stringify(hcn.lastShown.rows.map(row => row.cells.map(cell => cell.color)))
 '[[0,0,0,0,0,0,0,0,0,0],[0,0,3,3,3,3,3,0,0,0],[0,0,1,1,1,1,1,3,0,3],[0,3,1,2,2,2,2,3,3,3],[0,3,1,2,2,2,2,3,0,3],[0,3,3,3,3,3,3,3,3,0],[0,3,2,3,3,3,1,3,0,0],[0,0,3,3,2,3,3,0,0,0],[0,2,2,3,3,3,2,2,2,0],[0,2,2,2,2,2,2,0,0,0]]'
@@ -10,9 +10,7 @@ JSON.stringify(hcn.lastShown.rows.map(row => row.cells.map(cell => cell.color)))
 JSON.stringify(hcn.lastShown.rows.map((row, rowIndex) => row.cells.map((cell, columnIndex) => {return {row: rowIndex, column:columnIndex, color: cell.color}})))
 '[[{"row":0,"column":0,"color":0},{"row":0,"column":1,"color":0},{"row":0,"column":2,"color":0},{"row":0,"column":3,"color":0},{"row":0,"column":4,"color":0},{"row":0,"column":5,"color":0},{"row":0,"column":6,"color":0},{"row":0,"column":7,"color":0},{"row":0,"column":8,"color":0},{"row":0,"column":9,"color":0}],[{"row":1,"column":0,"color":0},{"row":1,"column":1,"color":0},{"row":1,"column":2,"color":3},{"row":1,"column":3,"color":3},{"row":1,"column":4,"color":3},{"row":1,"column":5,"color":3},{"row":1,"column":6,"color":3},{"row":1,"column":7,"color":0},{"row":1,"column":8,"color":0},{"row":1,"column":9,"color":0}],[{"row":2,"column":0,"color":0},{"row":2,"column":1,"color":0},{"row":2,"column":2,"color":1},{"row":2,"column":3,"color":1},{"row":2,"column":4,"color":1},{"row":2,"column":5,"color":1},{"row":2,"column":6,"color":1},{"row":2,"column":7,"color":3},{"row":2,"column":8,"color":0},{"row":2,"column":9,"color":3}],[{"row":3,"column":0,"color":0},{"row":3,"column":1,"color":3},{"row":3,"column":2,"color":1},{"row":3,"column":3,"color":2},{"row":3,"column":4,"color":2},{"row":3,"column":5,"color":2},{"row":3,"column":6,"color":2},{"row":3,"column":7,"color":3},{"row":3,"column":8,"color":3},{"row":3,"column":9,"color":3}],[{"row":4,"column":0,"color":0},{"row":4,"column":1,"color":3},{"row":4,"column":2,"color":1},{"row":4,"column":3,"color":2},{"row":4,"column":4,"color":2},{"row":4,"column":5,"color":2},{"row":4,"column":6,"color":2},{"row":4,"column":7,"color":3},{"row":4,"column":8,"color":0},{"row":4,"column":9,"color":3}],[{"row":5,"column":0,"color":0},{"row":5,"column":1,"color":3},{"row":5,"column":2,"color":3},{"row":5,"column":3,"color":3},{"row":5,"column":4,"color":3},{"row":5,"column":5,"color":3},{"row":5,"column":6,"color":3},{"row":5,"column":7,"color":3},{"row":5,"column":8,"color":3},{"row":5,"column":9,"color":0}],[{"row":6,"column":0,"color":0},{"row":6,"column":1,"color":3},{"row":6,"column":2,"color":2},{"row":6,"column":3,"color":3},{"row":6,"column":4,"color":3},{"row":6,"column":5,"color":3},{"row":6,"column":6,"color":1},{"row":6,"column":7,"color":3},{"row":6,"column":8,"color":0},{"row":6,"column":9,"color":0}],[{"row":7,"column":0,"color":0},{"row":7,"column":1,"color":0},{"row":7,"column":2,"color":3},{"row":7,"column":3,"color":3},{"row":7,"column":4,"color":2},{"row":7,"column":5,"color":3},{"row":7,"column":6,"color":3},{"row":7,"column":7,"color":0},{"row":7,"column":8,"color":0},{"row":7,"column":9,"color":0}],[{"row":8,"column":0,"color":0},{"row":8,"column":1,"color":2},{"row":8,"column":2,"color":2},{"row":8,"column":3,"color":3},{"row":8,"column":4,"color":3},{"row":8,"column":5,"color":3},{"row":8,"column":6,"color":2},{"row":8,"column":7,"color":2},{"row":8,"column":8,"color":2},{"row":8,"column":9,"color":0}],[{"row":9,"column":0,"color":0},{"row":9,"column":1,"color":2},{"row":9,"column":2,"color":2},{"row":9,"column":3,"color":2},{"row":9,"column":4,"color":2},{"row":9,"column":5,"color":2},{"row":9,"column":6,"color":2},{"row":9,"column":7,"color":0},{"row":9,"column":8,"color":0},{"row":9,"column":9,"color":0}]]'
 
-This is what the sample board should look like when it is done.  There are still bugs.
-When I click on the row and column headings in different orders, sometimes it works and sometimes I get a "wtf".
-TODO Store these correct answers.  Throw an exception the instant the code tries to eliminate a correct answer.
+This is what the sample board should look like when it is done.
 */
 
 /**
@@ -783,23 +781,24 @@ class ProposedRowOrColumn {
       ) {
         const requirements = allRequirements[colorToCheck];
         if (requirements.allInARow) {
-          let mustEndBefore = -1;
+          let lowestIndex = Number.MAX_SAFE_INTEGER;
+          let highestIndex = Number.MIN_SAFE_INTEGER;
+          let foundAMatch = false;
           for (const [index, colorOfCell] of known) {
             if (colorOfCell === colorToCheck) {
-              if (mustEndBefore == -1) {
-                // Found the first of this color.
-                mustEndBefore = index + requirements.count;
-              }
-              if (index >= mustEndBefore) {
-                valid = false;
-                break;
-              }
+              // Note:  Indices will not always come in order.
+              lowestIndex = Math.min(lowestIndex, index);
+              highestIndex = Math.max(highestIndex, index);
             }
+          }
+          if (highestIndex - lowestIndex >= requirements.count) {
+            // The are too spread out.
+            valid = false;
           }
         } else {
           let stillAllowed = requirements.count;
-          let firstIndex: number | undefined = undefined;
-          let lastIndex: number | undefined = undefined;
+          let lowestIndex = Number.MAX_SAFE_INTEGER;
+          let highestIndex = Number.MIN_SAFE_INTEGER;
           for (const [index, colorOfCell] of known) {
             if (colorOfCell === colorToCheck) {
               stillAllowed--;
@@ -807,14 +806,15 @@ class ProposedRowOrColumn {
                 valid = false;
                 break;
               }
-              firstIndex ??= index;
-              lastIndex = index;
+              // Note:  Indices will not always come in order.
+              lowestIndex = Math.min(lowestIndex, index);
+              highestIndex = Math.max(highestIndex, index);
             }
           }
           if (
             stillAllowed == 0 &&
             requirements.count > 1 &&
-            lastIndex! - firstIndex! + 1 == requirements.count
+            highestIndex! - lowestIndex! + 1 == requirements.count
           ) {
             // They are all in a row and they should not be.
             // Until all cells of this color have been layed out, we can't be sure of this.

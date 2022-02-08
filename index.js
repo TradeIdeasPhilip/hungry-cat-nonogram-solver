@@ -496,23 +496,23 @@ class ProposedRowOrColumn {
             for (let colorToCheck = 0; valid && colorToCheck < allRequirements.length; colorToCheck++) {
                 const requirements = allRequirements[colorToCheck];
                 if (requirements.allInARow) {
-                    let mustEndBefore = -1;
+                    let lowestIndex = Number.MAX_SAFE_INTEGER;
+                    let highestIndex = Number.MIN_SAFE_INTEGER;
+                    let foundAMatch = false;
                     for (const [index, colorOfCell] of known) {
                         if (colorOfCell === colorToCheck) {
-                            if (mustEndBefore == -1) {
-                                mustEndBefore = index + requirements.count;
-                            }
-                            if (index >= mustEndBefore) {
-                                valid = false;
-                                break;
-                            }
+                            lowestIndex = Math.min(lowestIndex, index);
+                            highestIndex = Math.max(highestIndex, index);
                         }
+                    }
+                    if (highestIndex - lowestIndex >= requirements.count) {
+                        valid = false;
                     }
                 }
                 else {
                     let stillAllowed = requirements.count;
-                    let firstIndex = undefined;
-                    let lastIndex = undefined;
+                    let lowestIndex = Number.MAX_SAFE_INTEGER;
+                    let highestIndex = Number.MIN_SAFE_INTEGER;
                     for (const [index, colorOfCell] of known) {
                         if (colorOfCell === colorToCheck) {
                             stillAllowed--;
@@ -520,13 +520,13 @@ class ProposedRowOrColumn {
                                 valid = false;
                                 break;
                             }
-                            firstIndex ??= index;
-                            lastIndex = index;
+                            lowestIndex = Math.min(lowestIndex, index);
+                            highestIndex = Math.max(highestIndex, index);
                         }
                     }
                     if (stillAllowed == 0 &&
                         requirements.count > 1 &&
-                        lastIndex - firstIndex + 1 == requirements.count) {
+                        highestIndex - lowestIndex + 1 == requirements.count) {
                         valid = false;
                     }
                 }
