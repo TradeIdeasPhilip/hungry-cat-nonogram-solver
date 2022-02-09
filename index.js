@@ -1,6 +1,5 @@
 import { getById } from "./lib/client-misc.js";
 import { count, sum, zip } from "./lib/misc.js";
-("medium 184");
 class CellColor {
     possible = new Set();
     constructor(colorCount) {

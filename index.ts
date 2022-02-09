@@ -13,18 +13,6 @@ JSON.stringify(hcn.lastShown.rows.map((row, rowIndex) => row.cells.map((cell, co
 This is what the "Medium 182" should look like when it is done.
 */
 
-("medium 184");
-//hint:  "Another bird"
-//{"colors":["#fff44f","black","orange","darkgreen"],"columns":[[{"count":15,"allInARow":true},{"count":0},{"count":0},{"count":0}],[{"count":12,"allInARow":false},{"count":3,"allInARow":false},{"count":0},{"count":0}],[{"count":9,"allInARow":false},{"count":3,"allInARow":false},{"count":3,"allInARow":false},{"count":0}],[{"count":2,"allInARow":true},{"count":3,"allInARow":true},{"count":6,"allInARow":false},{"count":4,"allInARow":true}],[{"count":2,"allInARow":false},{"count":3,"allInARow":false},{"count":4,"allInARow":false},{"count":6,"allInARow":true}],[{"count":2,"allInARow":true},{"count":3,"allInARow":false},{"count":1},{"count":9,"allInARow":false}],[{"count":3,"allInARow":false},{"count":1},{"count":0},{"count":11,"allInARow":true}],[{"count":5,"allInARow":false},{"count":0},{"count":0},{"count":10,"allInARow":true}],[{"count":5,"allInARow":true},{"count":0},{"count":0},{"count":10,"allInARow":true}],[{"count":13,"allInARow":false},{"count":2,"allInARow":true},{"count":0},{"count":0}]],"rows":[[{"count":7,"allInARow":false},{"count":0},{"count":2,"allInARow":true},{"count":1}],[{"count":5,"allInARow":false},{"count":2,"allInARow":true},{"count":2,"allInARow":true},{"count":1}],[{"count":5,"allInARow":false},{"count":3,"allInARow":false},{"count":1},{"count":1}],[{"count":5,"allInARow":false},{"count":0},{"count":3,"allInARow":true},{"count":2,"allInARow":true}],[{"count":5,"allInARow":false},{"count":0},{"count":2,"allInARow":true},{"count":3,"allInARow":true}],[{"count":4,"allInARow":false},{"count":0},{"count":0},{"count":6,"allInARow":true}],[{"count":4,"allInARow":false},{"count":0},{"count":0},{"count":6,"allInARow":true}],[{"count":4,"allInARow":false},{"count":0},{"count":0},{"count":6,"allInARow":true}],[{"count":4,"allInARow":false},{"count":0},{"count":0},{"count":6,"allInARow":true}],[{"count":4,"allInARow":true},{"count":1},{"count":0},{"count":5,"allInARow":true}],[{"count":4,"allInARow":true},{"count":1},{"count":0},{"count":5,"allInARow":true}],[{"count":3,"allInARow":false},{"count":0},{"count":3,"allInARow":true},{"count":4,"allInARow":true}],[{"count":3,"allInARow":false},{"count":4,"allInARow":true},{"count":1},{"count":2,"allInARow":true}],[{"count":5,"allInARow":false},{"count":4,"allInARow":true},{"count":0},{"count":1}],[{"count":6,"allInARow":false},{"count":3,"allInARow":true},{"count":0},{"count":1}]]}
-
-//191 medium
-// {"colors":["#76A2C4","#800000","#B87333","black"],"columns":[[{"count":9,"allInARow":false},{"count":3,"allInARow":true},{"count":0},{"count":3,"allInARow":true}],[{"count":6,"allInARow":false},{"count":7,"allInARow":false},{"count":0},{"count":2,"allInARow":false}],[{"count":4,"allInARow":false},{"count":5,"allInARow":false},{"count":3,"allInARow":true},{"count":3,"allInARow":false}],[{"count":2,"allInARow":false},{"count":4,"allInARow":false},{"count":4,"allInARow":true},{"count":5,"allInARow":false}],[{"count":6,"allInARow":false},{"count":3,"allInARow":false},{"count":5,"allInARow":false},{"count":1}],[{"count":6,"allInARow":false},{"count":3,"allInARow":false},{"count":5,"allInARow":false},{"count":1}],[{"count":6,"allInARow":true},{"count":4,"allInARow":false},{"count":2,"allInARow":false},{"count":3,"allInARow":false}],[{"count":9,"allInARow":false},{"count":4,"allInARow":true},{"count":2,"allInARow":true},{"count":0}],[{"count":11,"allInARow":false},{"count":1},{"count":3,"allInARow":true},{"count":0}],[{"count":12,"allInARow":false},{"count":0},{"count":3,"allInARow":true},{"count":0}]],"rows":[[{"count":10,"allInARow":true},{"count":0},{"count":0},{"count":0}],[{"count":7,"allInARow":false},{"count":0},{"count":0},{"count":3,"allInARow":true}],[{"count":6,"allInARow":true},{"count":2,"allInARow":true},{"count":0},{"count":2,"allInARow":false}],[{"count":5,"allInARow":true},{"count":4,"allInARow":true},{"count":0},{"count":1}],[{"count":7,"allInARow":true},{"count":0},{"count":0},{"count":3,"allInARow":true}],[{"count":7,"allInARow":false},{"count":0},{"count":3,"allInARow":true},{"count":0}],[{"count":2,"allInARow":true},{"count":2,"allInARow":true},{"count":6,"allInARow":true},{"count":0}],[{"count":2,"allInARow":true},{"count":4,"allInARow":false},{"count":3,"allInARow":false},{"count":1}],[{"count":1},{"count":4,"allInARow":false},{"count":5,"allInARow":false},{"count":0}],[{"count":2,"allInARow":false},{"count":3,"allInARow":false},{"count":3,"allInARow":false},{"count":2,"allInARow":false}],[{"count":1},{"count":4,"allInARow":false},{"count":5,"allInARow":false},{"count":0}],[{"count":2,"allInARow":true},{"count":7,"allInARow":true},{"count":1},{"count":0}],[{"count":5,"allInARow":false},{"count":4,"allInARow":true},{"count":1},{"count":0}],[{"count":8,"allInARow":false},{"count":0},{"count":0},{"count":2,"allInARow":false}],[{"count":6,"allInARow":false},{"count":0},{"count":0},{"count":4,"allInARow":false}]]}
-// Hint:  "The last one"
-
-//196 medium
-// {"colors":["black","white","green","yellow"],"columns":[[{"count":0},{"count":10,"allInARow":false},{"count":3,"allInARow":true},{"count":2,"allInARow":true}],[{"count":0},{"count":11,"allInARow":false},{"count":3,"allInARow":true},{"count":1}],[{"count":0},{"count":11,"allInARow":false},{"count":2,"allInARow":true},{"count":2,"allInARow":true}],[{"count":0},{"count":8,"allInARow":true},{"count":7,"allInARow":true},{"count":0}],[{"count":1},{"count":6,"allInARow":false},{"count":7,"allInARow":false},{"count":1}],[{"count":3,"allInARow":false},{"count":3,"allInARow":false},{"count":7,"allInARow":false},{"count":2,"allInARow":false}],[{"count":0},{"count":0},{"count":13,"allInARow":false},{"count":2,"allInARow":true}],[{"count":1},{"count":2,"allInARow":false},{"count":7,"allInARow":false},{"count":5,"allInARow":true}],[{"count":2,"allInARow":true},{"count":10,"allInARow":false},{"count":3,"allInARow":false},{"count":0}],[{"count":0},{"count":11,"allInARow":false},{"count":4,"allInARow":false},{"count":0}]],"rows":[[{"count":0},{"count":7,"allInARow":false},{"count":3,"allInARow":true},{"count":0}],[{"count":1},{"count":4,"allInARow":true},{"count":4,"allInARow":false},{"count":1}],[{"count":0},{"count":4,"allInARow":true},{"count":4,"allInARow":false},{"count":2,"allInARow":true}],[{"count":0},{"count":6,"allInARow":false},{"count":4,"allInARow":true},{"count":0}],[{"count":0},{"count":8,"allInARow":false},{"count":2,"allInARow":true},{"count":0}],[{"count":0},{"count":7,"allInARow":false},{"count":2,"allInARow":false},{"count":1}],[{"count":0},{"count":7,"allInARow":false},{"count":2,"allInARow":false},{"count":1}],[{"count":0},{"count":5,"allInARow":false},{"count":4,"allInARow":false},{"count":1}],[{"count":0},{"count":2,"allInARow":true},{"count":6,"allInARow":true},{"count":2,"allInARow":false}],[{"count":0},{"count":0},{"count":8,"allInARow":false},{"count":2,"allInARow":false}],[{"count":0},{"count":2,"allInARow":false},{"count":6,"allInARow":false},{"count":2,"allInARow":true}],[{"count":0},{"count":4,"allInARow":false},{"count":3,"allInARow":false},{"count":3,"allInARow":false}],[{"count":0},{"count":8,"allInARow":false},{"count":2,"allInARow":false},{"count":0}],[{"count":4,"allInARow":false},{"count":4,"allInARow":false},{"count":2,"allInARow":false},{"count":0}],[{"count":2,"allInARow":false},{"count":4,"allInARow":false},{"count":4,"allInARow":false},{"count":0}]]}
-// Hint: "Chicken ancestor"
-
 /**
  * This is what you might see at the top of a column or on the left of a row.
  * There is one of these for each color.
@@ -945,11 +933,17 @@ window.hcn = {
 const samplesSelect = getById("samples", HTMLSelectElement);
 const loadSamplesButton = getById("loadSamples", HTMLButtonElement);
 
+/**
+ * We add some extra fields when we store these in a list, so the user can pick the one he wants.
+ */
 type PuzzleDescriptionWithMetaData = PuzzleDescription & {
   hint?: string;
   description: string;
 };
 
+/**
+ * We attach the PuzzleDescription object directly to the <option> element.
+ */
 type WithDescription = HTMLOptionElement & {
   puzzleDescription: PuzzleDescriptionWithMetaData;
 };
@@ -971,7 +965,6 @@ let puzzlesLoaded = false;
 try {
   const response = await fetch("./puzzles.json");
   const body: PuzzleDescriptionWithMetaData[] = await response.json();
-  //console.log(body);
   samplesSelect.innerText = "";
   body.forEach((puzzleDescription) => {
     const option = document.createElement("option");
