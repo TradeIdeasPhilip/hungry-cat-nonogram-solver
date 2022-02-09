@@ -13,140 +13,9 @@ JSON.stringify(hcn.lastShown.rows.map((row, rowIndex) => row.cells.map((cell, co
 This is what the "Medium 182" should look like when it is done.
 */
 
-const puzzleList = [
-  {
-    notes: "Medium 182",
-    colors: ["#fff44f", "#5C4033", "#B87333", "white"],
-    columns: [
-      [
-        { count: 10, allInARow: true },
-        { count: 0 },
-        { count: 0 },
-        { count: 0 },
-      ],
-      [
-        { count: 4, allInARow: false },
-        { count: 0 },
-        { count: 2, allInARow: true },
-        { count: 4, allInARow: true },
-      ],
-      [
-        { count: 1 },
-        { count: 3, allInARow: true },
-        { count: 3, allInARow: false },
-        { count: 3, allInARow: false },
-      ],
-      [
-        { count: 1 },
-        { count: 1 },
-        { count: 3, allInARow: false },
-        { count: 5, allInARow: false },
-      ],
-      [
-        { count: 1 },
-        { count: 1 },
-        { count: 4, allInARow: false },
-        { count: 4, allInARow: false },
-      ],
-      [
-        { count: 1 },
-        { count: 1 },
-        { count: 3, allInARow: false },
-        { count: 5, allInARow: false },
-      ],
-      [
-        { count: 1 },
-        { count: 2, allInARow: false },
-        { count: 4, allInARow: false },
-        { count: 3, allInARow: false },
-      ],
-      [
-        { count: 4, allInARow: false },
-        { count: 0 },
-        { count: 1 },
-        { count: 5, allInARow: true },
-      ],
-      [
-        { count: 7, allInARow: false },
-        { count: 0 },
-        { count: 1 },
-        { count: 2, allInARow: false },
-      ],
-      [
-        { count: 7, allInARow: false },
-        { count: 0 },
-        { count: 0 },
-        { count: 3, allInARow: true },
-      ],
-    ],
-    rows: [
-      [
-        { count: 10, allInARow: true },
-        { count: 0 },
-        { count: 0 },
-        { count: 0 },
-      ],
-      [
-        { count: 5, allInARow: false },
-        { count: 0 },
-        { count: 0 },
-        { count: 5, allInARow: true },
-      ],
-      [
-        { count: 3, allInARow: false },
-        { count: 5, allInARow: true },
-        { count: 0 },
-        { count: 2, allInARow: false },
-      ],
-      [
-        { count: 1 },
-        { count: 1 },
-        { count: 4, allInARow: true },
-        { count: 4, allInARow: false },
-      ],
-      [
-        { count: 2, allInARow: false },
-        { count: 1 },
-        { count: 4, allInARow: true },
-        { count: 3, allInARow: false },
-      ],
-      [
-        { count: 2, allInARow: false },
-        { count: 0 },
-        { count: 0 },
-        { count: 8, allInARow: false },
-      ],
-      [
-        { count: 3, allInARow: false },
-        { count: 1 },
-        { count: 1 },
-        { count: 5, allInARow: false },
-      ],
-      [
-        { count: 5, allInARow: false },
-        { count: 0 },
-        { count: 1 },
-        { count: 4, allInARow: false },
-      ],
-      [
-        { count: 2, allInARow: false },
-        { count: 0 },
-        { count: 5, allInARow: false },
-        { count: 3, allInARow: true },
-      ],
-      [
-        { count: 4, allInARow: false },
-        { count: 0 },
-        { count: 6, allInARow: true },
-        { count: 0 },
-      ],
-    ],
-  },
-];
 ("medium 184");
 //hint:  "Another bird"
 //{"colors":["#fff44f","black","orange","darkgreen"],"columns":[[{"count":15,"allInARow":true},{"count":0},{"count":0},{"count":0}],[{"count":12,"allInARow":false},{"count":3,"allInARow":false},{"count":0},{"count":0}],[{"count":9,"allInARow":false},{"count":3,"allInARow":false},{"count":3,"allInARow":false},{"count":0}],[{"count":2,"allInARow":true},{"count":3,"allInARow":true},{"count":6,"allInARow":false},{"count":4,"allInARow":true}],[{"count":2,"allInARow":false},{"count":3,"allInARow":false},{"count":4,"allInARow":false},{"count":6,"allInARow":true}],[{"count":2,"allInARow":true},{"count":3,"allInARow":false},{"count":1},{"count":9,"allInARow":false}],[{"count":3,"allInARow":false},{"count":1},{"count":0},{"count":11,"allInARow":true}],[{"count":5,"allInARow":false},{"count":0},{"count":0},{"count":10,"allInARow":true}],[{"count":5,"allInARow":true},{"count":0},{"count":0},{"count":10,"allInARow":true}],[{"count":13,"allInARow":false},{"count":2,"allInARow":true},{"count":0},{"count":0}]],"rows":[[{"count":7,"allInARow":false},{"count":0},{"count":2,"allInARow":true},{"count":1}],[{"count":5,"allInARow":false},{"count":2,"allInARow":true},{"count":2,"allInARow":true},{"count":1}],[{"count":5,"allInARow":false},{"count":3,"allInARow":false},{"count":1},{"count":1}],[{"count":5,"allInARow":false},{"count":0},{"count":3,"allInARow":true},{"count":2,"allInARow":true}],[{"count":5,"allInARow":false},{"count":0},{"count":2,"allInARow":true},{"count":3,"allInARow":true}],[{"count":4,"allInARow":false},{"count":0},{"count":0},{"count":6,"allInARow":true}],[{"count":4,"allInARow":false},{"count":0},{"count":0},{"count":6,"allInARow":true}],[{"count":4,"allInARow":false},{"count":0},{"count":0},{"count":6,"allInARow":true}],[{"count":4,"allInARow":false},{"count":0},{"count":0},{"count":6,"allInARow":true}],[{"count":4,"allInARow":true},{"count":1},{"count":0},{"count":5,"allInARow":true}],[{"count":4,"allInARow":true},{"count":1},{"count":0},{"count":5,"allInARow":true}],[{"count":3,"allInARow":false},{"count":0},{"count":3,"allInARow":true},{"count":4,"allInARow":true}],[{"count":3,"allInARow":false},{"count":4,"allInARow":true},{"count":1},{"count":2,"allInARow":true}],[{"count":5,"allInARow":false},{"count":4,"allInARow":true},{"count":0},{"count":1}],[{"count":6,"allInARow":false},{"count":3,"allInARow":true},{"count":0},{"count":1}]]}
-const testTest: PuzzleDescription = puzzleList[0];
 
 //191 medium
 // {"colors":["#76A2C4","#800000","#B87333","black"],"columns":[[{"count":9,"allInARow":false},{"count":3,"allInARow":true},{"count":0},{"count":3,"allInARow":true}],[{"count":6,"allInARow":false},{"count":7,"allInARow":false},{"count":0},{"count":2,"allInARow":false}],[{"count":4,"allInARow":false},{"count":5,"allInARow":false},{"count":3,"allInARow":true},{"count":3,"allInARow":false}],[{"count":2,"allInARow":false},{"count":4,"allInARow":false},{"count":4,"allInARow":true},{"count":5,"allInARow":false}],[{"count":6,"allInARow":false},{"count":3,"allInARow":false},{"count":5,"allInARow":false},{"count":1}],[{"count":6,"allInARow":false},{"count":3,"allInARow":false},{"count":5,"allInARow":false},{"count":1}],[{"count":6,"allInARow":true},{"count":4,"allInARow":false},{"count":2,"allInARow":false},{"count":3,"allInARow":false}],[{"count":9,"allInARow":false},{"count":4,"allInARow":true},{"count":2,"allInARow":true},{"count":0}],[{"count":11,"allInARow":false},{"count":1},{"count":3,"allInARow":true},{"count":0}],[{"count":12,"allInARow":false},{"count":0},{"count":3,"allInARow":true},{"count":0}]],"rows":[[{"count":10,"allInARow":true},{"count":0},{"count":0},{"count":0}],[{"count":7,"allInARow":false},{"count":0},{"count":0},{"count":3,"allInARow":true}],[{"count":6,"allInARow":true},{"count":2,"allInARow":true},{"count":0},{"count":2,"allInARow":false}],[{"count":5,"allInARow":true},{"count":4,"allInARow":true},{"count":0},{"count":1}],[{"count":7,"allInARow":true},{"count":0},{"count":0},{"count":3,"allInARow":true}],[{"count":7,"allInARow":false},{"count":0},{"count":3,"allInARow":true},{"count":0}],[{"count":2,"allInARow":true},{"count":2,"allInARow":true},{"count":6,"allInARow":true},{"count":0}],[{"count":2,"allInARow":true},{"count":4,"allInARow":false},{"count":3,"allInARow":false},{"count":1}],[{"count":1},{"count":4,"allInARow":false},{"count":5,"allInARow":false},{"count":0}],[{"count":2,"allInARow":false},{"count":3,"allInARow":false},{"count":3,"allInARow":false},{"count":2,"allInARow":false}],[{"count":1},{"count":4,"allInARow":false},{"count":5,"allInARow":false},{"count":0}],[{"count":2,"allInARow":true},{"count":7,"allInARow":true},{"count":1},{"count":0}],[{"count":5,"allInARow":false},{"count":4,"allInARow":true},{"count":1},{"count":0}],[{"count":8,"allInARow":false},{"count":0},{"count":0},{"count":2,"allInARow":false}],[{"count":6,"allInARow":false},{"count":0},{"count":0},{"count":4,"allInARow":false}]]}
@@ -378,7 +247,7 @@ class Puzzle {
   static verifyDescription(description: PuzzleDescription) {
     const colorCount = description.colors.length;
     /**
-     * 
+     *
      * @param numberOfCrossItems If we are verifying rows, this is the number of columns.
      * @param requirementsForTable The requirements from all rows or all columns.
      * @param description Used only for error messages.
@@ -833,7 +702,7 @@ load3PartsButton.addEventListener("click", () => {
         const thisRowRowColumn: ColorRequirements[] = [];
         items.forEach((item) => {
           const lastChar = item[item.length - 1];
-          const allInARow = (lastChar == "*") || (lastChar == "•");
+          const allInARow = lastChar == "*" || lastChar == "•";
           if (allInARow) {
             item = item.substring(0, item.length - 1);
           }
@@ -1072,3 +941,56 @@ window.hcn = {
   showPuzzle,
   ProposedRowOrColumn,
 };
+
+const samplesSelect = getById("samples", HTMLSelectElement);
+const loadSamplesButton = getById("loadSamples", HTMLButtonElement);
+
+type PuzzleDescriptionWithMetaData = PuzzleDescription & {
+  hint?: string;
+  description: string;
+};
+
+type WithDescription = HTMLOptionElement & {
+  puzzleDescription: PuzzleDescriptionWithMetaData;
+};
+
+loadSamplesButton.addEventListener("click", () => {
+  const option = samplesSelect.selectedOptions.item(0);
+  if (option) {
+    console.log();
+    const puzzleDescription = (option as WithDescription).puzzleDescription;
+    console.log(puzzleDescription.description, puzzleDescription);
+    const puzzle = new Puzzle(puzzleDescription);
+    puzzle.checkIntersections();
+    showPuzzle(outputTable, puzzle);
+    // TODO load this into the other two input sections.
+  }
+});
+
+let puzzlesLoaded = false;
+try {
+  const response = await fetch("./puzzles.json");
+  const body: PuzzleDescriptionWithMetaData[] = await response.json();
+  //console.log(body);
+  samplesSelect.innerText = "";
+  body.forEach((puzzleDescription) => {
+    const option = document.createElement("option");
+    option.innerText = puzzleDescription.description;
+    (option as WithDescription).puzzleDescription = puzzleDescription;
+    samplesSelect.appendChild(option);
+  });
+  if (body.length > 0) {
+    loadSamplesButton.disabled = false;
+  }
+  puzzlesLoaded = true;
+} catch (reason) {
+  puzzlesLoaded = false;
+  console.log(reason);
+}
+if (!puzzlesLoaded) {
+  samplesSelect.innerText = "";
+  const option = document.createElement("option");
+  option.innerText = "Failed.";
+  samplesSelect.appendChild(option);
+  loadSamplesButton.disabled = true;
+}

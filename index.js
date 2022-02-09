@@ -1,137 +1,6 @@
 import { getById } from "./lib/client-misc.js";
 import { count, sum, zip } from "./lib/misc.js";
-const puzzleList = [
-    {
-        notes: "Medium 182",
-        colors: ["#fff44f", "#5C4033", "#B87333", "white"],
-        columns: [
-            [
-                { count: 10, allInARow: true },
-                { count: 0 },
-                { count: 0 },
-                { count: 0 },
-            ],
-            [
-                { count: 4, allInARow: false },
-                { count: 0 },
-                { count: 2, allInARow: true },
-                { count: 4, allInARow: true },
-            ],
-            [
-                { count: 1 },
-                { count: 3, allInARow: true },
-                { count: 3, allInARow: false },
-                { count: 3, allInARow: false },
-            ],
-            [
-                { count: 1 },
-                { count: 1 },
-                { count: 3, allInARow: false },
-                { count: 5, allInARow: false },
-            ],
-            [
-                { count: 1 },
-                { count: 1 },
-                { count: 4, allInARow: false },
-                { count: 4, allInARow: false },
-            ],
-            [
-                { count: 1 },
-                { count: 1 },
-                { count: 3, allInARow: false },
-                { count: 5, allInARow: false },
-            ],
-            [
-                { count: 1 },
-                { count: 2, allInARow: false },
-                { count: 4, allInARow: false },
-                { count: 3, allInARow: false },
-            ],
-            [
-                { count: 4, allInARow: false },
-                { count: 0 },
-                { count: 1 },
-                { count: 5, allInARow: true },
-            ],
-            [
-                { count: 7, allInARow: false },
-                { count: 0 },
-                { count: 1 },
-                { count: 2, allInARow: false },
-            ],
-            [
-                { count: 7, allInARow: false },
-                { count: 0 },
-                { count: 0 },
-                { count: 3, allInARow: true },
-            ],
-        ],
-        rows: [
-            [
-                { count: 10, allInARow: true },
-                { count: 0 },
-                { count: 0 },
-                { count: 0 },
-            ],
-            [
-                { count: 5, allInARow: false },
-                { count: 0 },
-                { count: 0 },
-                { count: 5, allInARow: true },
-            ],
-            [
-                { count: 3, allInARow: false },
-                { count: 5, allInARow: true },
-                { count: 0 },
-                { count: 2, allInARow: false },
-            ],
-            [
-                { count: 1 },
-                { count: 1 },
-                { count: 4, allInARow: true },
-                { count: 4, allInARow: false },
-            ],
-            [
-                { count: 2, allInARow: false },
-                { count: 1 },
-                { count: 4, allInARow: true },
-                { count: 3, allInARow: false },
-            ],
-            [
-                { count: 2, allInARow: false },
-                { count: 0 },
-                { count: 0 },
-                { count: 8, allInARow: false },
-            ],
-            [
-                { count: 3, allInARow: false },
-                { count: 1 },
-                { count: 1 },
-                { count: 5, allInARow: false },
-            ],
-            [
-                { count: 5, allInARow: false },
-                { count: 0 },
-                { count: 1 },
-                { count: 4, allInARow: false },
-            ],
-            [
-                { count: 2, allInARow: false },
-                { count: 0 },
-                { count: 5, allInARow: false },
-                { count: 3, allInARow: true },
-            ],
-            [
-                { count: 4, allInARow: false },
-                { count: 0 },
-                { count: 6, allInARow: true },
-                { count: 0 },
-            ],
-        ],
-    },
-];
 ("medium 184");
-const testTest = puzzleList[0];
 class CellColor {
     possible = new Set();
     constructor(colorCount) {
@@ -572,7 +441,7 @@ load3PartsButton.addEventListener("click", () => {
                 const thisRowRowColumn = [];
                 items.forEach((item) => {
                     const lastChar = item[item.length - 1];
-                    const allInARow = (lastChar == "*") || (lastChar == "•");
+                    const allInARow = lastChar == "*" || lastChar == "•";
                     if (allInARow) {
                         item = item.substring(0, item.length - 1);
                     }
@@ -729,4 +598,44 @@ window.hcn = {
     showPuzzle,
     ProposedRowOrColumn,
 };
+const samplesSelect = getById("samples", HTMLSelectElement);
+const loadSamplesButton = getById("loadSamples", HTMLButtonElement);
+loadSamplesButton.addEventListener("click", () => {
+    const option = samplesSelect.selectedOptions.item(0);
+    if (option) {
+        console.log();
+        const puzzleDescription = option.puzzleDescription;
+        console.log(puzzleDescription.description, puzzleDescription);
+        const puzzle = new Puzzle(puzzleDescription);
+        puzzle.checkIntersections();
+        showPuzzle(outputTable, puzzle);
+    }
+});
+let puzzlesLoaded = false;
+try {
+    const response = await fetch("./puzzles.json");
+    const body = await response.json();
+    samplesSelect.innerText = "";
+    body.forEach((puzzleDescription) => {
+        const option = document.createElement("option");
+        option.innerText = puzzleDescription.description;
+        option.puzzleDescription = puzzleDescription;
+        samplesSelect.appendChild(option);
+    });
+    if (body.length > 0) {
+        loadSamplesButton.disabled = false;
+    }
+    puzzlesLoaded = true;
+}
+catch (reason) {
+    puzzlesLoaded = false;
+    console.log(reason);
+}
+if (!puzzlesLoaded) {
+    samplesSelect.innerText = "";
+    const option = document.createElement("option");
+    option.innerText = "Failed.";
+    samplesSelect.appendChild(option);
+    loadSamplesButton.disabled = true;
+}
 //# sourceMappingURL=index.js.map

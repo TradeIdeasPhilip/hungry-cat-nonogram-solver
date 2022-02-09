@@ -7,14 +7,14 @@
   </head>
   <body>
     <p>
-      <a href="https://github.com/TradeIdeasPhilip/hungry-cat-nonogram-solver"
-        >More info.</a
-      >
-    </p>
-    <p>
       Quick start:&nbsp; Click the "Load button" to load a sample.&nbsp; Click
       on a row or column header to tell the software to try to solve that row or
       column.&nbsp; Repeat as required.
+    </p>
+    <p>
+      <a href="https://github.com/TradeIdeasPhilip/hungry-cat-nonogram-solver"
+        >More info.</a
+      >
     </p>
     <hr />
     <textarea id="requirements">
@@ -83,6 +83,15 @@ white
       <button id="load3Parts">Load</button> from these 3 fields.&nbsp; And show
       the JSON form.
     </div>
+    <hr />
+    <select id="samples">
+      <option>Loading...</option>
+      <option>Please</option>
+      <option>come</option>
+      <option>back</option>
+      <option>soon.</option>
+    </select>
+    <button id="loadSamples" disabled>Load</button>
     <hr />
     <table id="output" border="3"></table>
   </body>
