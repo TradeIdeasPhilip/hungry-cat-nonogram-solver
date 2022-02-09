@@ -772,7 +772,7 @@ loadButton.addEventListener("click", () => {
         row
           .map(
             (requirements) =>
-              requirements.count + (requirements.allInARow ? "*" : "")
+              requirements.count + (requirements.allInARow ? "•" : "")
           )
           .join(" ")
       )
@@ -832,7 +832,8 @@ load3PartsButton.addEventListener("click", () => {
         }
         const thisRowRowColumn: ColorRequirements[] = [];
         items.forEach((item) => {
-          const allInARow = item[item.length - 1] == "*";
+          const lastChar = item[item.length - 1];
+          const allInARow = (lastChar == "*") || (lastChar == "•");
           if (allInARow) {
             item = item.substring(0, item.length - 1);
           }

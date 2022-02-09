@@ -521,7 +521,7 @@ loadButton.addEventListener("click", () => {
     ]) {
         destination.value = source
             .map((row) => row
-            .map((requirements) => requirements.count + (requirements.allInARow ? "*" : ""))
+            .map((requirements) => requirements.count + (requirements.allInARow ? "•" : ""))
             .join(" "))
             .join("\r\n");
         destination.rows = source.length;
@@ -571,7 +571,8 @@ load3PartsButton.addEventListener("click", () => {
                 }
                 const thisRowRowColumn = [];
                 items.forEach((item) => {
-                    const allInARow = item[item.length - 1] == "*";
+                    const lastChar = item[item.length - 1];
+                    const allInARow = (lastChar == "*") || (lastChar == "•");
                     if (allInARow) {
                         item = item.substring(0, item.length - 1);
                     }
