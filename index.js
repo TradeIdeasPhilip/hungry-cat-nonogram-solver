@@ -425,6 +425,7 @@ function updateColorSamples() {
         colorSamplesDiv.appendChild(span);
     });
 }
+updateColorSamples();
 colorsTextArea.addEventListener("input", updateColorSamples);
 updateColorSamples();
 load3PartsButton.addEventListener("click", () => {
