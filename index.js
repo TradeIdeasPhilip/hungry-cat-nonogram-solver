@@ -474,6 +474,26 @@ load3PartsButton.addEventListener("click", () => {
     puzzle.checkIntersections();
     showPuzzle(outputTable, puzzle);
 });
+const colorEditor = getById("colorEditor", HTMLInputElement);
+const colorEditorSample = getById("colorEditorSample", HTMLSpanElement);
+const colorEditorValue = getById("colorEditorValue", HTMLInputElement);
+colorEditor.addEventListener("input", () => {
+    const color = colorEditor.value;
+    colorEditorSample.style.color = color;
+    colorEditorValue.value = color;
+});
+colorEditor.dispatchEvent(new Event("input"));
+colorEditorValue.addEventListener("input", () => {
+    const color = colorEditorValue.value;
+    if (/^\#[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]$/.test(color)) {
+        colorEditorSample.style.color = color;
+        colorEditor.value = color;
+        colorEditorValue.style.color = "";
+    }
+    else {
+        colorEditorValue.style.color = "red";
+    }
+});
 class ProposedRowOrColumn {
     valid;
     known;

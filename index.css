@@ -2,9 +2,6 @@
   width: 1em;
   height: 1em;
 }
-.anyColor {
-  background: conic-gradient(#fcc, #ffc, #cfc, #cff, #ccf, #fcf);
-}
 .rowHeader {
   display: flex;
   min-height: 2.5em;

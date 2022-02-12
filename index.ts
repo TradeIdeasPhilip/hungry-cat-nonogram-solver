@@ -1,6 +1,10 @@
 import { getById } from "./lib/client-misc.js";
 import { count, sum, zip } from "./lib/misc.js";
 
+// TODO 
+// I found a board that we can't solve yet.
+// Look for description = "💀 Expert 305"
+
 /*
 test data
 
@@ -724,6 +728,31 @@ load3PartsButton.addEventListener("click", () => {
   const puzzle = new Puzzle(puzzleDescription);
   puzzle.checkIntersections();
   showPuzzle(outputTable, puzzle);
+});
+
+//<input type="color" id="colorEditor" />
+//<span id="colorEditorSample">★★★</span>
+//<span id="colorEditorValue"></span>
+const colorEditor = getById("colorEditor", HTMLInputElement);
+const colorEditorSample = getById("colorEditorSample", HTMLSpanElement);
+const colorEditorValue = getById("colorEditorValue", HTMLInputElement);
+
+colorEditor.addEventListener("input", () => {
+  const color = colorEditor.value;
+  colorEditorSample.style.color = color;
+  colorEditorValue.value = color;
+});
+colorEditor.dispatchEvent(new Event("input"));
+
+colorEditorValue.addEventListener("input", () => {
+  const color = colorEditorValue.value;
+  if (/^\#[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]$/.test(color)) {
+    colorEditorSample.style.color = color;
+    colorEditor.value = color;
+    colorEditorValue.style.color = "";
+  } else {
+    colorEditorValue.style.color = "red";
+  }
 });
 
 /**

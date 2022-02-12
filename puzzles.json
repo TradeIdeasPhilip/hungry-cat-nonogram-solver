@@ -1951,5 +1951,339 @@
         { "count": 2, "allInARow": false }
       ]
     ]
-  }
+  },
+  {
+    "description": "Expert 302",
+    "hint": "Invented by M McFly in 1955",
+    "colors": ["#006", "#b0e0e6", "#802", "#00b"],
+    "columns": [
+      [
+        { "count": 0 },
+        { "count": 9, "allInARow": false },
+        { "count": 1 },
+        { "count": 0 }
+      ],
+      [
+        { "count": 0 },
+        { "count": 9, "allInARow": false },
+        { "count": 1 },
+        { "count": 0 }
+      ],
+      [
+        { "count": 1 },
+        { "count": 7, "allInARow": true },
+        { "count": 1 },
+        { "count": 1 }
+      ],
+      [
+        { "count": 1 },
+        { "count": 6, "allInARow": false },
+        { "count": 2, "allInARow": false },
+        { "count": 1 }
+      ],
+      [
+        { "count": 2, "allInARow": true },
+        { "count": 5, "allInARow": false },
+        { "count": 1 },
+        { "count": 2, "allInARow": false }
+      ],
+      [
+        { "count": 2, "allInARow": true },
+        { "count": 3, "allInARow": false },
+        { "count": 1 },
+        { "count": 4, "allInARow": true }
+      ],
+      [
+        { "count": 1 },
+        { "count": 2, "allInARow": true },
+        { "count": 1 },
+        { "count": 6, "allInARow": true }
+      ],
+      [
+        { "count": 1 },
+        { "count": 7, "allInARow": false },
+        { "count": 1 },
+        { "count": 1 }
+      ],
+      [
+        { "count": 0 },
+        { "count": 8, "allInARow": false },
+        { "count": 1 },
+        { "count": 1 }
+      ],
+      [
+        { "count": 0 },
+        { "count": 8, "allInARow": false },
+        { "count": 2, "allInARow": false },
+        { "count": 0 }
+      ]
+    ],
+    "rows": [
+      [
+        { "count": 2, "allInARow": true },
+        { "count": 8, "allInARow": false },
+        { "count": 0 },
+        { "count": 0 }
+      ],
+      [
+        { "count": 2, "allInARow": true },
+        { "count": 8, "allInARow": false },
+        { "count": 0 },
+        { "count": 0 }
+      ],
+      [
+        { "count": 0 },
+        { "count": 5, "allInARow": true },
+        { "count": 1 },
+        { "count": 4, "allInARow": true }
+      ],
+      [
+        { "count": 0 },
+        { "count": 6, "allInARow": false },
+        { "count": 1 },
+        { "count": 3, "allInARow": true }
+      ],
+      [
+        { "count": 0 },
+        { "count": 8, "allInARow": false },
+        { "count": 0 },
+        { "count": 2, "allInARow": true }
+      ],
+      [
+        { "count": 0 },
+        { "count": 7, "allInARow": false },
+        { "count": 0 },
+        { "count": 3, "allInARow": true }
+      ],
+      [
+        { "count": 0 },
+        { "count": 8, "allInARow": false },
+        { "count": 0 },
+        { "count": 2, "allInARow": false }
+      ],
+      [
+        { "count": 0 },
+        { "count": 6, "allInARow": false },
+        { "count": 2, "allInARow": false },
+        { "count": 2, "allInARow": false }
+      ],
+      [
+        { "count": 0 },
+        { "count": 2, "allInARow": false },
+        { "count": 8, "allInARow": true },
+        { "count": 0 }
+      ],
+      [
+        { "count": 4, "allInARow": false },
+        { "count": 6, "allInARow": false },
+        { "count": 0 },
+        { "count": 0 }
+      ]
+    ]
+  },
+  {
+    "description": "Expert 303",
+    "hint": "He's the King",
+    "colors": ["#D4B484", "black", "#008b8b", "#D6C9AF"],
+    "columns": [
+      [
+        { "count": 0 },
+        { "count": 0 },
+        { "count": 11, "allInARow": true },
+        { "count": 4, "allInARow": true }
+      ],
+      [
+        { "count": 2, "allInARow": true },
+        { "count": 4, "allInARow": true },
+        { "count": 7, "allInARow": false },
+        { "count": 2, "allInARow": true }
+      ],
+      [
+        { "count": 6, "allInARow": true },
+        { "count": 4, "allInARow": false },
+        { "count": 0 },
+        { "count": 5, "allInARow": true }
+      ],
+      [
+        { "count": 7, "allInARow": false },
+        { "count": 4, "allInARow": false },
+        { "count": 0 },
+        { "count": 4, "allInARow": true }
+      ],
+      [
+        { "count": 7, "allInARow": false },
+        { "count": 3, "allInARow": false },
+        { "count": 2, "allInARow": true },
+        { "count": 3, "allInARow": true }
+      ],
+      [
+        { "count": 4, "allInARow": false },
+        { "count": 4, "allInARow": false },
+        { "count": 2, "allInARow": true },
+        { "count": 5, "allInARow": true }
+      ],
+      [
+        { "count": 1 },
+        { "count": 2, "allInARow": true },
+        { "count": 11, "allInARow": false },
+        { "count": 1 }
+      ],
+      [
+        { "count": 0 },
+        { "count": 2, "allInARow": true },
+        { "count": 12, "allInARow": false },
+        { "count": 1 }
+      ],
+      [
+        { "count": 0 },
+        { "count": 2, "allInARow": true },
+        { "count": 12, "allInARow": false },
+        { "count": 1 }
+      ],
+      [
+        { "count": 1 },
+        { "count": 0 },
+        { "count": 11, "allInARow": false },
+        { "count": 3, "allInARow": true }
+      ]
+    ],
+    "rows": [
+      [
+        { "count": 0 },
+        { "count": 5, "allInARow": true },
+        { "count": 5, "allInARow": false },
+        { "count": 0 }
+      ],
+      [
+        { "count": 0 },
+        { "count": 6, "allInARow": true },
+        { "count": 4, "allInARow": false },
+        { "count": 0 }
+      ],
+      [
+        { "count": 3, "allInARow": true },
+        { "count": 2, "allInARow": true },
+        { "count": 5, "allInARow": false },
+        { "count": 0 }
+      ],
+      [
+        { "count": 2, "allInARow": false },
+        { "count": 3, "allInARow": false },
+        { "count": 5, "allInARow": false },
+        { "count": 0 }
+      ],
+      [
+        { "count": 5, "allInARow": true },
+        { "count": 1 },
+        { "count": 4, "allInARow": false },
+        { "count": 0 }
+      ],
+      [
+        { "count": 5, "allInARow": true },
+        { "count": 0 },
+        { "count": 5, "allInARow": false },
+        { "count": 0 }
+      ],
+      [
+        { "count": 3, "allInARow": true },
+        { "count": 2, "allInARow": true },
+        { "count": 5, "allInARow": false },
+        { "count": 0 }
+      ],
+      [
+        { "count": 3, "allInARow": false },
+        { "count": 2, "allInARow": true },
+        { "count": 5, "allInARow": false },
+        { "count": 0 }
+      ],
+      [
+        { "count": 4, "allInARow": true },
+        { "count": 0 },
+        { "count": 5, "allInARow": false },
+        { "count": 1 }
+      ],
+      [
+        { "count": 2, "allInARow": true },
+        { "count": 0 },
+        { "count": 5, "allInARow": false },
+        { "count": 3, "allInARow": false }
+      ],
+      [
+        { "count": 1 },
+        { "count": 0 },
+        { "count": 1 },
+        { "count": 8, "allInARow": false }
+      ],
+      [
+        { "count": 0 },
+        { "count": 0 },
+        { "count": 4, "allInARow": true },
+        { "count": 6, "allInARow": true }
+      ],
+      [
+        { "count": 0 },
+        { "count": 0 },
+        { "count": 5, "allInARow": false },
+        { "count": 5, "allInARow": false }
+      ],
+      [
+        { "count": 0 },
+        { "count": 0 },
+        { "count": 5, "allInARow": false },
+        { "count": 5, "allInARow": false }
+      ],
+      [
+        { "count": 0 },
+        { "count": 4, "allInARow": true },
+        { "count": 5, "allInARow": false },
+        { "count": 1 }
+      ]
+    ]
+  },
+  {
+    "description": "Expert 304",
+    "hint": "Mosaic",
+    "colors": ["#75bbe6", "white", "yellow"],
+    "columns": [
+      [{ "count": 1 }, { "count": 4, "allInARow": false }, { "count": 0 }],
+      [
+        { "count": 2, "allInARow": false },
+        { "count": 2, "allInARow": false },
+        { "count": 1 }
+      ],
+      [
+        { "count": 3, "allInARow": false },
+        { "count": 0 },
+        { "count": 2, "allInARow": false }
+      ],
+      [
+        { "count": 2, "allInARow": false },
+        { "count": 2, "allInARow": false },
+        { "count": 1 }
+      ],
+      [{ "count": 1 }, { "count": 4, "allInARow": false }, { "count": 0 }]
+    ],
+    "rows": [
+      [{ "count": 1 }, { "count": 4, "allInARow": false }, { "count": 0 }],
+      [
+        { "count": 2, "allInARow": false },
+        { "count": 2, "allInARow": false },
+        { "count": 1 }
+      ],
+      [
+        { "count": 3, "allInARow": false },
+        { "count": 0 },
+        { "count": 2, "allInARow": false }
+      ],
+      [
+        { "count": 2, "allInARow": false },
+        { "count": 2, "allInARow": false },
+        { "count": 1 }
+      ],
+      [{ "count": 1 }, { "count": 4, "allInARow": false }, { "count": 0 }]
+    ]
+  },
+  {"description":"💀 Expert 305",
+    "hint": "unsolved",
+    "colors":["white","#75bbe6","#dfad8b","#460000"],"columns":[[{"count":1},{"count":0},{"count":0},{"count":14,"allInARow":false}],[{"count":4,"allInARow":false},{"count":2,"allInARow":true},{"count":5,"allInARow":true},{"count":4,"allInARow":false}],[{"count":6,"allInARow":false},{"count":1},{"count":5,"allInARow":true},{"count":3,"allInARow":false}],[{"count":12,"allInARow":false},{"count":0},{"count":2,"allInARow":true},{"count":1}],[{"count":6,"allInARow":false},{"count":0},{"count":2,"allInARow":true},{"count":7,"allInARow":false}],[{"count":6,"allInARow":false},{"count":0},{"count":2,"allInARow":true},{"count":7,"allInARow":false}],[{"count":6,"allInARow":false},{"count":0},{"count":2,"allInARow":true},{"count":7,"allInARow":false}],[{"count":12,"allInARow":false},{"count":0},{"count":2,"allInARow":true},{"count":1}],[{"count":6,"allInARow":false},{"count":1},{"count":7,"allInARow":false},{"count":1}],[{"count":4,"allInARow":false},{"count":2,"allInARow":true},{"count":8,"allInARow":false},{"count":1}]],"rows":[[{"count":2,"allInARow":false},{"count":0},{"count":0},{"count":8,"allInARow":false}],[{"count":6,"allInARow":false},{"count":0},{"count":0},{"count":4,"allInARow":false}],[{"count":2,"allInARow":false},{"count":0},{"count":4,"allInARow":false},{"count":4,"allInARow":false}],[{"count":2,"allInARow":false},{"count":0},{"count":4,"allInARow":false},{"count":4,"allInARow":false}],[{"count":2,"allInARow":false},{"count":0},{"count":4,"allInARow":false},{"count":4,"allInARow":false}],[{"count":2,"allInARow":false},{"count":0},{"count":4,"allInARow":false},{"count":4,"allInARow":false}],[{"count":5,"allInARow":true},{"count":0},{"count":4,"allInARow":false},{"count":1}],[{"count":9,"allInARow":true},{"count":0},{"count":0},{"count":1}],[{"count":5,"allInARow":true},{"count":4,"allInARow":false},{"count":0},{"count":1}],[{"count":5,"allInARow":true},{"count":2,"allInARow":false},{"count":0},{"count":3,"allInARow":false}],[{"count":10,"allInARow":true},{"count":0},{"count":0},{"count":0}],[{"count":4,"allInARow":false},{"count":0},{"count":4,"allInARow":false},{"count":2,"allInARow":true}],[{"count":0},{"count":0},{"count":7,"allInARow":true},{"count":3,"allInARow":true}],[{"count":0},{"count":0},{"count":4,"allInARow":false},{"count":6,"allInARow":false}],[{"count":9,"allInARow":true},{"count":0},{"count":0},{"count":1}]]}
 ]
