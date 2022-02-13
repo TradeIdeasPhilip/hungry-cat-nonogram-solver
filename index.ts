@@ -1,7 +1,7 @@
 import { getById } from "./lib/client-misc.js";
 import { count, sum, zip } from "./lib/misc.js";
 
-// TODO 
+// TODO
 // I found a board that we can't solve yet.
 // Look for description = "💀 Expert 305"
 // I have confirmed that there is only one valid solution.
@@ -97,6 +97,13 @@ class CellColor {
       if (!allowed.has(toCheck)) {
         this.eliminate(toCheck);
       }
+    });
+  }
+  set(color: number) {
+    this.limitTo({
+      has(index: number) {
+        return color == index;
+      },
     });
   }
   isPossible(color: number) {
@@ -218,17 +225,17 @@ class Puzzle {
   private readonly rows: ReadonlyArray<RowOrColumn>;
   private readonly columns: ReadonlyArray<RowOrColumn>;
   getDimensions() {
-    return { rowCount : this.rows.length, columnCount: this.columns.length};
+    return { rowCount: this.rows.length, columnCount: this.columns.length };
   }
   getRow(index: number): ProposedRowOrColumn {
-    const result = this.rows[0];
+    const result = this.rows[index];
     if (!result) {
       throw new Error(`Unknown row number: ${index}`);
     }
     return new ProposedRowOrColumn(result);
   }
   getColumn(index: number): ProposedRowOrColumn {
-    const result = this.columns[0];
+    const result = this.columns[index];
     if (!result) {
       throw new Error(`Unknown column number: ${index}`);
     }
@@ -541,6 +548,112 @@ class Puzzle {
   public examineColumn(index: number) {
     this.examineRowOrColumn(this.columns[index]);
   }
+
+  public examineRemainingCells() {
+    const cellsToFill: { rowIndex: number; columnIndex: number }[] = [];
+    const columnsToTrack = new Set<number>();
+    const rowsToTrack = new Set<number>();
+    this.rows.forEach((row, rowIndex) => {
+      row.cells.forEach((cell, columnIndex) => {
+        if (!cell.known) {
+          cellsToFill.push({ rowIndex, columnIndex });
+          columnsToTrack.add(columnIndex);
+          rowsToTrack.add(rowIndex);
+        }
+      });
+    });
+    const initialColumns = new Map(
+      Array.from(columnsToTrack, (columnIndex) => [
+        columnIndex,
+        this.getColumn(columnIndex),
+      ])
+    );
+    const initialRows = new Map(
+      Array.from(rowsToTrack, (rowIndex) => [rowIndex, this.getRow(rowIndex)])
+    );
+    const colorsStillMissing = new Array<number>(
+      this.description.colors.length
+    ).fill(0);
+    this.rows.forEach((row, rowIndex) => {
+      row.requirements.forEach((colorRequirements, color) => {
+        const requiredThisTime = colorRequirements.count;
+        colorsStillMissing[color] += requiredThisTime;
+      });
+      row.cells.forEach((cell) => {
+        const color = cell.color;
+        if (color !== undefined) {
+          colorsStillMissing[color]--;
+        }
+      });
+    });
+    const successful: {
+      rows: ReadonlyMap<number, ProposedRowOrColumn>;
+      columns: ReadonlyMap<number, ProposedRowOrColumn>;
+    }[] = [];
+    const tryCell = (
+      cellToFillIndex: number,
+      colorsStillMissing: readonly number[],
+      rows: ReadonlyMap<number, ProposedRowOrColumn>,
+      columns: ReadonlyMap<number, ProposedRowOrColumn>
+    ) => {
+      //const ᕳᕲ = 1;
+      if (cellToFillIndex >= cellsToFill.length) {
+        colorsStillMissing.forEach((value) => {
+          if (value) {
+            console.error("colorsStillMissing", colorsStillMissing);
+            throw new Error("wtf");
+          }
+        });
+        successful.push({ rows, columns });
+      } else {
+        const { rowIndex, columnIndex } = cellsToFill[cellToFillIndex];
+        const cell = this.rows[rowIndex].cells[columnIndex];
+        cell.colors.forEach((color) => {
+          if (colorsStillMissing[color] < 1) {
+            return;
+          }
+          const row = new ProposedRowOrColumn(rows.get(rowIndex)!, [
+            [columnIndex, color],
+          ]);
+          if (!row.valid) {
+            return;
+          }
+          const column = new ProposedRowOrColumn(columns.get(columnIndex)!, [
+            [rowIndex, color],
+          ]);
+          if (!column.valid) {
+            return;
+          }
+          const missingAfterThis = [...colorsStillMissing];
+          missingAfterThis[color]--;
+          const rowsAfterThis = new Map(rows);
+          rowsAfterThis.set(rowIndex, row);
+          const columnsAfterThis = new Map(columns);
+          columnsAfterThis.set(columnIndex, column);
+          tryCell(
+            cellToFillIndex + 1,
+            missingAfterThis,
+            rowsAfterThis,
+            columnsAfterThis
+          );
+        });
+      }
+    };
+    tryCell(0, colorsStillMissing, initialRows, initialColumns);
+    if (successful.length != 1) {
+      throw new Error("wtf");
+    }
+    const { rows, columns } = successful[0];
+    cellsToFill.forEach(({ rowIndex, columnIndex }) => {
+      const cell = this.rows[rowIndex].cells[columnIndex];
+      const row = rows.get(rowIndex)!;
+      const color = row.color(columnIndex);
+      if (color === undefined) {
+        throw new Error("wtf");
+      }
+      cell.set(color);
+    });
+  }
 }
 
 function showPuzzle(destination: HTMLTableElement, source: Puzzle) {
@@ -616,9 +729,9 @@ function showPuzzle(destination: HTMLTableElement, source: Puzzle) {
       if (cellStyle.length > 1) {
         cell.classList.add("encircle");
       }
-      cell.addEventListener("click", ()=>{
+      cell.addEventListener("click", () => {
         console.log(`hcn.lastShown.rows[${rowIndex}].cells[${columnIndex}]`);
-      })
+      });
     });
   }
   hcn.lastShown = source;
@@ -935,7 +1048,7 @@ class ProposedRowOrColumn {
   isKnown(index: number): boolean {
     return this.known.has(index);
   }
-  color(index: number): number | unknown {
+  color(index: number): number | undefined {
     return this.known.get(index) ?? this.base.cells[index].color;
   }
   colors(index: number): number[] {
@@ -1041,3 +1154,14 @@ doOneOfEachButton.addEventListener("click", () => {
     showPuzzle(outputTable, lastShown);
   }
 });
+
+getById("examineRemainingCells", HTMLButtonElement).addEventListener(
+  "click",
+  () => {
+    const lastShown = hcn.lastShown;
+    if (lastShown instanceof Puzzle) {
+      lastShown.examineRemainingCells();
+      showPuzzle(outputTable, lastShown);
+    }
+  }
+);

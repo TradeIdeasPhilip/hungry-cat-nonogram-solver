@@ -34,6 +34,13 @@ class CellColor {
             }
         });
     }
+    set(color) {
+        this.limitTo({
+            has(index) {
+                return color == index;
+            },
+        });
+    }
     isPossible(color) {
         return this.possible.has(color);
     }
@@ -90,14 +97,14 @@ class Puzzle {
         return { rowCount: this.rows.length, columnCount: this.columns.length };
     }
     getRow(index) {
-        const result = this.rows[0];
+        const result = this.rows[index];
         if (!result) {
             throw new Error(`Unknown row number: ${index}`);
         }
         return new ProposedRowOrColumn(result);
     }
     getColumn(index) {
-        const result = this.columns[0];
+        const result = this.columns[index];
         if (!result) {
             throw new Error(`Unknown column number: ${index}`);
         }
@@ -315,6 +322,92 @@ class Puzzle {
     }
     examineColumn(index) {
         this.examineRowOrColumn(this.columns[index]);
+    }
+    examineRemainingCells() {
+        const cellsToFill = [];
+        const columnsToTrack = new Set();
+        const rowsToTrack = new Set();
+        this.rows.forEach((row, rowIndex) => {
+            row.cells.forEach((cell, columnIndex) => {
+                if (!cell.known) {
+                    cellsToFill.push({ rowIndex, columnIndex });
+                    columnsToTrack.add(columnIndex);
+                    rowsToTrack.add(rowIndex);
+                }
+            });
+        });
+        const initialColumns = new Map(Array.from(columnsToTrack, (columnIndex) => [
+            columnIndex,
+            this.getColumn(columnIndex),
+        ]));
+        const initialRows = new Map(Array.from(rowsToTrack, (rowIndex) => [rowIndex, this.getRow(rowIndex)]));
+        const colorsStillMissing = new Array(this.description.colors.length).fill(0);
+        this.rows.forEach((row, rowIndex) => {
+            row.requirements.forEach((colorRequirements, color) => {
+                const requiredThisTime = colorRequirements.count;
+                colorsStillMissing[color] += requiredThisTime;
+            });
+            row.cells.forEach((cell) => {
+                const color = cell.color;
+                if (color !== undefined) {
+                    colorsStillMissing[color]--;
+                }
+            });
+        });
+        const successful = [];
+        const tryCell = (cellToFillIndex, colorsStillMissing, rows, columns) => {
+            if (cellToFillIndex >= cellsToFill.length) {
+                colorsStillMissing.forEach((value) => {
+                    if (value) {
+                        console.error("colorsStillMissing", colorsStillMissing);
+                        throw new Error("wtf");
+                    }
+                });
+                successful.push({ rows, columns });
+            }
+            else {
+                const { rowIndex, columnIndex } = cellsToFill[cellToFillIndex];
+                const cell = this.rows[rowIndex].cells[columnIndex];
+                cell.colors.forEach((color) => {
+                    if (colorsStillMissing[color] < 1) {
+                        return;
+                    }
+                    const row = new ProposedRowOrColumn(rows.get(rowIndex), [
+                        [columnIndex, color],
+                    ]);
+                    if (!row.valid) {
+                        return;
+                    }
+                    const column = new ProposedRowOrColumn(columns.get(columnIndex), [
+                        [rowIndex, color],
+                    ]);
+                    if (!column.valid) {
+                        return;
+                    }
+                    const missingAfterThis = [...colorsStillMissing];
+                    missingAfterThis[color]--;
+                    const rowsAfterThis = new Map(rows);
+                    rowsAfterThis.set(rowIndex, row);
+                    const columnsAfterThis = new Map(columns);
+                    columnsAfterThis.set(columnIndex, column);
+                    tryCell(cellToFillIndex + 1, missingAfterThis, rowsAfterThis, columnsAfterThis);
+                });
+            }
+        };
+        tryCell(0, colorsStillMissing, initialRows, initialColumns);
+        if (successful.length != 1) {
+            throw new Error("wtf");
+        }
+        const { rows, columns } = successful[0];
+        cellsToFill.forEach(({ rowIndex, columnIndex }) => {
+            const cell = this.rows[rowIndex].cells[columnIndex];
+            const row = rows.get(rowIndex);
+            const color = row.color(columnIndex);
+            if (color === undefined) {
+                throw new Error("wtf");
+            }
+            cell.set(color);
+        });
     }
 }
 function showPuzzle(destination, source) {
@@ -675,6 +768,13 @@ doOneOfEachButton.addEventListener("click", () => {
         for (let columnNumber = 0; columnNumber < columnCount; columnNumber++) {
             lastShown.examineColumn(columnNumber);
         }
+        showPuzzle(outputTable, lastShown);
+    }
+});
+getById("examineRemainingCells", HTMLButtonElement).addEventListener("click", () => {
+    const lastShown = hcn.lastShown;
+    if (lastShown instanceof Puzzle) {
+        lastShown.examineRemainingCells();
         showPuzzle(outputTable, lastShown);
     }
 });

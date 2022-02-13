@@ -86,6 +86,12 @@ export function intersection<T>(a: ReadonlySet<T>, b: ReadonlySet<T>) {
   return new Set([...a].filter((x) => b.has(x)));
 }
 
+export function addMany<T>(destination: Set<T>, source: Iterable<T>) {
+  for (const item of source) {
+    destination.add(item);
+  }
+}
+
 /**
  *
  * @param array Pick from here.
@@ -97,7 +103,7 @@ export function pick<T>(array: T[]): T {
 }
 
 // https://dev.to/chrismilson/zip-iterator-in-typescript-ldm
-type Iterableify<T> = { [K in keyof T]: Iterable<T[K]> }
+type Iterableify<T> = { [K in keyof T]: Iterable<T[K]> };
 /**
  * Given a list of iterables, make a single iterable.
  * The resulting iterable will contain arrays.
@@ -115,29 +121,29 @@ export function* zip<T extends Array<any>>(
   ...toZip: Iterableify<T>
 ): Generator<T> {
   // Get iterators for all of the iterables.
-  const iterators = toZip.map(i => i[Symbol.iterator]())
+  const iterators = toZip.map((i) => i[Symbol.iterator]());
 
   while (true) {
-      // Advance all of the iterators.
-      const results = iterators.map(i => i.next())
+    // Advance all of the iterators.
+    const results = iterators.map((i) => i.next());
 
-      // If any of the iterators are done, we should stop.
-      if (results.some(({ done }) => done)) {
-          break
-      }
+    // If any of the iterators are done, we should stop.
+    if (results.some(({ done }) => done)) {
+      break;
+    }
 
-      // We can assert the yield type, since we know none
-      // of the iterators are done.
-      yield results.map(({ value }) => value) as T
+    // We can assert the yield type, since we know none
+    // of the iterators are done.
+    yield results.map(({ value }) => value) as T;
   }
 }
 
-export function *count(start = 0, end = Infinity, step = 1){
+export function* count(start = 0, end = Infinity, step = 1) {
   for (let i = start; i < end; i += step) {
     yield i;
   }
 }
 
-export function sum(items : number[]) : number {
+export function sum(items: number[]): number {
   return items.reduce((accumulator, current) => accumulator + current, 0);
 }

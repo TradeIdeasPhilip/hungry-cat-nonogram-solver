@@ -24,7 +24,7 @@
     <button id="load">Load from JSON</button>
     <hr />
     <div>Colors (one per line):</div>
-    <div style="display: flex;">
+    <div style="display: flex">
       <div>
         <textarea id="colors">
 #fff44f
@@ -36,12 +36,12 @@ white
       </div>
       <div id="colorSamples"><span>★★★</span></div>
     </div>
-    <div style="display: flex; align-items: center;">
+    <div style="display: flex; align-items: center">
       <input type="color" id="colorEditor" />
-      <div style="width: 0.5em;"></div>
+      <div style="width: 0.5em"></div>
       <span id="colorEditorSample" class="gradientBackground">★★★</span>
-      <div style="width: 0.5em;"></div>
-      <input id="colorEditorValue">
+      <div style="width: 0.5em"></div>
+      <input id="colorEditorValue" />
     </div>
     <br />
     <div>Columns</div>
@@ -102,6 +102,9 @@ white
     <hr />
     <table id="output" border="3"></table>
     <button id="doOneOfEach">Do one of each</button>
+    <hr />
+    <button id="examineRemainingCells">Examine remaining cells</button> All at
+    once. This is expensive and should be used as a last resort.
     <!--
     <svg width="5cm" height="5cm"  viewBox="0 0 1000 1000"
   xmlns="http://www.w3.org/2000/svg" version="1.1">
