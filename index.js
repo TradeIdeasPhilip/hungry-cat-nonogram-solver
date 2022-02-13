@@ -86,6 +86,9 @@ class Puzzle {
     description;
     rows;
     columns;
+    getDimensions() {
+        return { rowCount: this.rows.length, columnCount: this.columns.length };
+    }
     getRow(index) {
         const result = this.rows[0];
         if (!result) {
@@ -359,7 +362,7 @@ function showPuzzle(destination, source) {
             showPuzzle(destination, source);
         });
         headerCellWrapper.style.cursor = rowIndex % 2 ? "cell" : "crosshair";
-        rowSource.forEach((cellStyle) => {
+        rowSource.forEach((cellStyle, columnIndex) => {
             const cell = row.insertCell();
             cell.style.width = "1em";
             const background = "conic-gradient(" +
@@ -371,6 +374,9 @@ function showPuzzle(destination, source) {
             if (cellStyle.length > 1) {
                 cell.classList.add("encircle");
             }
+            cell.addEventListener("click", () => {
+                console.log(`hcn.lastShown.rows[${rowIndex}].cells[${columnIndex}]`);
+            });
         });
     }
     hcn.lastShown = source;
@@ -658,4 +664,18 @@ if (!puzzlesLoaded) {
     samplesSelect.appendChild(option);
     loadSamplesButton.disabled = true;
 }
+const doOneOfEachButton = getById("doOneOfEach", HTMLButtonElement);
+doOneOfEachButton.addEventListener("click", () => {
+    const lastShown = hcn.lastShown;
+    if (lastShown instanceof Puzzle) {
+        const { rowCount, columnCount } = lastShown.getDimensions();
+        for (let rowNumber = 0; rowNumber < rowCount; rowNumber++) {
+            lastShown.examineRow(rowNumber);
+        }
+        for (let columnNumber = 0; columnNumber < columnCount; columnNumber++) {
+            lastShown.examineColumn(columnNumber);
+        }
+        showPuzzle(outputTable, lastShown);
+    }
+});
 //# sourceMappingURL=index.js.map

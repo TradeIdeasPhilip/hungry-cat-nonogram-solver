@@ -4,6 +4,9 @@ import { count, sum, zip } from "./lib/misc.js";
 // TODO 
 // I found a board that we can't solve yet.
 // Look for description = "💀 Expert 305"
+// I have confirmed that there is only one valid solution.
+// We get to 8 cells that are unknown.  4 columns, 2 rows.
+// If we could speculate on all 8 cells at once, the problem would be trivial.
 
 /*
 test data
@@ -214,6 +217,9 @@ type RowOrColumn = {
 class Puzzle {
   private readonly rows: ReadonlyArray<RowOrColumn>;
   private readonly columns: ReadonlyArray<RowOrColumn>;
+  getDimensions() {
+    return { rowCount : this.rows.length, columnCount: this.columns.length};
+  }
   getRow(index: number): ProposedRowOrColumn {
     const result = this.rows[0];
     if (!result) {
@@ -592,7 +598,7 @@ function showPuzzle(destination: HTMLTableElement, source: Puzzle) {
       showPuzzle(destination, source);
     });
     headerCellWrapper.style.cursor = rowIndex % 2 ? "cell" : "crosshair";
-    rowSource.forEach((cellStyle) => {
+    rowSource.forEach((cellStyle, columnIndex) => {
       const cell = row.insertCell();
       cell.style.width = "1em";
       const background =
@@ -610,6 +616,9 @@ function showPuzzle(destination: HTMLTableElement, source: Puzzle) {
       if (cellStyle.length > 1) {
         cell.classList.add("encircle");
       }
+      cell.addEventListener("click", ()=>{
+        console.log(`hcn.lastShown.rows[${rowIndex}].cells[${columnIndex}]`);
+      })
     });
   }
   hcn.lastShown = source;
@@ -1017,3 +1026,18 @@ if (!puzzlesLoaded) {
   samplesSelect.appendChild(option);
   loadSamplesButton.disabled = true;
 }
+
+const doOneOfEachButton = getById("doOneOfEach", HTMLButtonElement);
+doOneOfEachButton.addEventListener("click", () => {
+  const lastShown = hcn.lastShown;
+  if (lastShown instanceof Puzzle) {
+    const { rowCount, columnCount } = lastShown.getDimensions();
+    for (let rowNumber = 0; rowNumber < rowCount; rowNumber++) {
+      lastShown.examineRow(rowNumber);
+    }
+    for (let columnNumber = 0; columnNumber < columnCount; columnNumber++) {
+      lastShown.examineColumn(columnNumber);
+    }
+    showPuzzle(outputTable, lastShown);
+  }
+});
